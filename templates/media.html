@@ -1,0 +1,53 @@
+<!--
+  미디어 조각 — skiper91(폰 화면) · skiper97(영상) 자리에 쓰는 것.
+  Pro 패키지는 이 정적 사이트에 설치되지 않음. 역할만 이 톤으로 준비해 둠.
+  지금은 01–03에 안 붙어 있음. 필요할 때 아래를 복사해 케이스에 붙인다.
+
+  뭘 붙이나
+    폰 UI 캡처 / 폰 녹화  →  PHONE
+    와이드 영상, 프로세스  →  VIDEO
+    그냥 큰 사진          →  기존 .cv-fig (이거 쓰지 않음)
+
+  어디에
+    히어로(제목 아래 큰 자리)  VIDEO 또는 기존 cv-fig
+    최종 디자인 01·02·03 칸   PHONE  (cv-figsm 대신)
+    본문 한가운데 폰 한 대     PHONE 그대로
+-->
+
+<!-- PHONE — 이미지 -->
+<figure class="jr-phone">
+  <div class="jr-phone__bezel">
+    <div class="jr-phone__island" aria-hidden="true"></div>
+    <div class="jr-phone__screen">
+      <img src="assets/images/__slug__-screen.png" alt="">
+    </div>
+  </div>
+</figure>
+
+<!-- PHONE — 화면 안이 영상일 때. 이미지 줄만 이걸로 바꾼다 -->
+<figure class="jr-phone">
+  <div class="jr-phone__bezel">
+    <div class="jr-phone__island" aria-hidden="true"></div>
+    <div class="jr-phone__screen">
+      <video src="assets/video/__slug__-screen.mp4" muted loop playsinline autoplay></video>
+    </div>
+  </div>
+</figure>
+
+<!-- PHONE — 최종 디자인 칸. cv-figsm 자리를 이걸로 -->
+<div class="cv-feat">
+  <figure class="jr-phone">
+    <div class="jr-phone__bezel">
+      <div class="jr-phone__island" aria-hidden="true"></div>
+      <div class="jr-phone__screen">
+        <img src="assets/images/__slug__-f1.png" alt="">
+      </div>
+    </div>
+  </figure>
+  <p data-i18n="__p__F1"></p>
+</div>
+
+<!-- VIDEO — 히어로. cv-fig 대신. 클립 마스크가 기본, 사각이면 data-shape="rect" -->
+<figure class="jr-video">
+  <video src="assets/video/__slug__.mp4" poster="assets/images/__slug__-poster.jpg" controls playsinline preload="metadata"></video>
+</figure>

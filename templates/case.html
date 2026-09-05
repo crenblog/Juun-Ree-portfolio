@@ -1,0 +1,113 @@
+<!--
+  케이스 템플릿 — 페이지가 아님. 복사해서 붙이는 조각.
+
+  01 Biennale / 02 Loop / 03 Off 와 같은 논리 구조:
+  한 줄 문제 → 메타 → 배경 → 문제 → 리서치 → 탐색(버린 안) → 최종 3컷 → 결과 → 회고
+
+  추가하는 법
+  1. 이 파일을 복제하지 말고, 아래 A→D를 복사해 각 자리에 붙인다.
+  2. 모든 __TOKEN__ 을 치환한다.
+  3. 이전 케이스의 data-next 를 cv-__slug__ 로 바꾼다.
+  4. 사이드바 Work 숫자 .n 을 올린다.
+  5. 커버는 assets/images/ 에 넣고 __cover__ 는 pv-a | pv-b | pv-c
+     (새 색이 필요하면 css/site.css 에 .pv-d 한 줄 추가)
+  6. 폰 화면·영상이면 templates/media.html 에서 해당 조각을 가져와
+     히어로(.cv-fig) 또는 최종 디자인 칸(.cv-figsm) 대신 붙인다
+
+  토큰
+    __slug__       biennale 처럼 소문자 아이디
+    __n__          04
+    __prev__       3          (idx-row data-prev, 0부터)
+    __title__      Project Name — Client
+    __short__      사이드바용 짧은 이름
+    __year__       2026
+    __cover__      pv-a
+    __p__          q          (i18n 접두어, 기존 b / l / o 와 겹치지 않게)
+    __next__       biennale   (다음 케이스 slug)
+    __nextTitle__  Biennale Guide — SeMA
+
+  다른 맥락(에세이, 실험 등)이 생기면 templates/ 아래에 파일을 하나 더 두면 된다.
+-->
+
+<!-- A. 사이드바 — #workSub 안에 -->
+<a href="#proj-__slug__">__short__</a>
+
+
+<!-- B. 워크 리스트 — #work .idx-list 안에 -->
+<article class="idx-row" id="proj-__slug__" data-prev="__prev__">
+  <span class="r-num" aria-hidden="true">__n__</span>
+  <div class="r-body">
+    <h3>__title__</h3>
+    <p data-i18n="r__n__Stmt"></p>
+    <ul class="pc-meta">
+      <li data-i18n="r__n__M1"></li>
+      <li data-i18n="r__n__M2"></li>
+      <li>__year__</li>
+    </ul>
+  </div>
+  <div class="r-side">
+    <span class="badge" data-i18n="r__n__Badge"></span>
+    <button type="button" class="view-link" data-i18n="viewLink">Take a closer look →</button>
+  </div>
+</article>
+
+
+<!-- C. 케이스 본문 — #caseView .cv-wrap 안에 -->
+<section class="cv-case" id="cv-__slug__" hidden>
+  <p class="cv-kick" data-i18n="__p__Badge"></p>
+  <h1 class="cv-title">__title__</h1>
+  <p class="cv-sub" data-i18n="__p__Sub"></p>
+  <div class="cv-meta">
+    <div><span data-i18n="csRole"></span><b data-i18n="__p__Role"></b></div>
+    <div><span data-i18n="csTeam"></span><b data-i18n="__p__Team"></b></div>
+    <div><span data-i18n="csTime"></span><b data-i18n="__p__Time"></b></div>
+    <div><span data-i18n="csPlat"></span><b data-i18n="__p__Plat"></b></div>
+  </div>
+  <div class="cv-fig __cover__"><span>__short__</span></div>
+  <!-- 큰 히어로 이미지는 skiper66 클립이 기본. 예전 둥근 사각이면 data-shape="rect".
+       와이드 영상이면 이 줄을 templates/media.html 의 VIDEO 로 교체.
+       폰 UI면 PHONE 을 이 아래 또는 최종 디자인 칸에. -->
+  <div class="cv-blk cv-text"><h2 data-i18n="csH1"></h2><p data-i18n="__p__Ctx"></p></div>
+  <div class="cv-blk"><h2 data-i18n="csH2"></h2><p class="cv-big cv-text" data-i18n="__p__Prob"></p><p class="cv-evi" data-i18n="__p__ProbE"></p></div>
+  <div class="cv-blk"><h2 data-i18n="csH3"></h2><p class="cv-methods" data-i18n="__p__Res"></p><div class="cv-ins"><p data-i18n="__p__I1"></p></div><div class="cv-ins"><p data-i18n="__p__I2"></p></div><div class="cv-ins"><p data-i18n="__p__I3"></p></div></div>
+  <div class="cv-blk"><h2 data-i18n="csH4"></h2><p class="cv-text" data-i18n="__p__Exp"></p><div class="cv-killed"><span data-i18n="csKill"></span><p data-i18n="__p__Kill"></p></div></div>
+  <div class="cv-blk"><h2 data-i18n="csH5"></h2>
+    <div class="cv-feat"><div class="cv-figsm __cover__"><span>01</span></div><p data-i18n="__p__F1"></p></div>
+    <div class="cv-feat rev"><div class="cv-figsm __cover__"><span>02</span></div><p data-i18n="__p__F2"></p></div>
+    <div class="cv-feat"><div class="cv-figsm __cover__"><span>03</span></div><p data-i18n="__p__F3"></p></div>
+  </div>
+  <div class="cv-blk"><h2 data-i18n="csH6"></h2><p class="cv-impact" data-i18n="__p__Imp"></p><p class="cv-how cv-text"><b data-i18n="csHow"></b> — <span data-i18n="__p__ImpHow"></span></p></div>
+  <div class="cv-blk"><h2 data-i18n="csH7"></h2><div class="cv-refl"><div><h3 data-i18n="csWork"></h3><p data-i18n="__p__RefW"></p></div><div><h3 data-i18n="csDiff"></h3><p data-i18n="__p__RefD"></p></div></div></div>
+  <a class="cv-next" href="#" data-next="cv-__next__"><span data-i18n="csNext"></span><b>__nextTitle__ →</b></a>
+</section>
+
+
+<!-- D. 카피 — js/i18n.js 의 I18N = { ... } 안에 붙인다. en/ko/ja 를 채운다. -->
+<!--
+  "r__n__Stmt":  {"en": "", "ko": "", "ja": ""},
+  "r__n__M1":    {"en": "", "ko": "", "ja": ""},
+  "r__n__M2":    {"en": "", "ko": "", "ja": ""},
+  "r__n__Badge": {"en": "", "ko": "", "ja": ""},
+  "__p__Badge":  {"en": "", "ko": "", "ja": ""},
+  "__p__Sub":    {"en": "", "ko": "", "ja": ""},
+  "__p__Role":   {"en": "", "ko": "", "ja": ""},
+  "__p__Team":   {"en": "", "ko": "", "ja": ""},
+  "__p__Time":   {"en": "", "ko": "", "ja": ""},
+  "__p__Plat":   {"en": "", "ko": "", "ja": ""},
+  "__p__Ctx":    {"en": "", "ko": "", "ja": ""},
+  "__p__Prob":   {"en": "", "ko": "", "ja": ""},
+  "__p__ProbE":  {"en": "", "ko": "", "ja": ""},
+  "__p__Res":    {"en": "", "ko": "", "ja": ""},
+  "__p__I1":     {"en": "", "ko": "", "ja": ""},
+  "__p__I2":     {"en": "", "ko": "", "ja": ""},
+  "__p__I3":     {"en": "", "ko": "", "ja": ""},
+  "__p__Exp":    {"en": "", "ko": "", "ja": ""},
+  "__p__Kill":   {"en": "", "ko": "", "ja": ""},
+  "__p__F1":     {"en": "", "ko": "", "ja": ""},
+  "__p__F2":     {"en": "", "ko": "", "ja": ""},
+  "__p__F3":     {"en": "", "ko": "", "ja": ""},
+  "__p__Imp":    {"en": "", "ko": "", "ja": ""},
+  "__p__ImpHow": {"en": "", "ko": "", "ja": ""},
+  "__p__RefW":   {"en": "", "ko": "", "ja": ""},
+  "__p__RefD":   {"en": "", "ko": "", "ja": ""},
+-->
