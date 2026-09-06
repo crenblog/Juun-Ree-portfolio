@@ -149,6 +149,8 @@
           <a href="#proj-biennale">Biennale Guide</a>
           <a href="#proj-loop">Loop Vocabulary</a>
           <a href="#proj-off">Off Screen Time</a>
+          <!-- Archive destination marker only — intentionally not connected yet. -->
+          <div class="sb-all-work" aria-label="All work">All work <span aria-hidden="true">→</span></div>
         </div>
         <a href="#about"><span>About</span></a>
         <a href="#contact"><span>Contact</span></a>
@@ -233,6 +235,9 @@
         </div>
       </section>
 
+      <!-- Visual placeholder for the future Work archive. Intentionally not a link yet. -->
+      <div class="all-work-placeholder" aria-label="All work">All work <span aria-hidden="true">→</span></div>
+
       <section id="about">
         <div class="about-grid">
           <div class="ag-lead">
@@ -282,14 +287,13 @@
      적용 대상: 아래 케이스 스터디 섹션들 (cv-case · csH1~csH7 구조)
 -->
 <div class="case-view" id="caseView" role="dialog" aria-modal="true" aria-label="Case study details" aria-hidden="true" inert>
-<div class="cv-top"><div class="cv-topin"><button class="cv-back" id="cvBack" data-i18n="csBack" type="button"></button><div class="cv-chips" id="cvChips"></div></div>
+<div class="cv-top"><div class="cv-topin"><button class="cv-back" id="cvBack" type="button" data-i18n-aria="csBack" aria-label="All work"><svg class="cv-back__icon" viewBox="0 0 18 18" aria-hidden="true" focusable="false"><path d="M11.25 4.5 6.75 9l4.5 4.5" fill="none" stroke="currentColor" stroke-width="1.35" stroke-linecap="round" stroke-linejoin="round"/></svg></button><div class="cv-chips" id="cvChips"></div>
 <div class="sb-lang case-lang" role="group" aria-label="Language Selector">
   <div class="indicator" aria-hidden="true"></div>
   <button class="on" data-lang="en">EN</button>
   <button data-lang="ko">KR</button>
   <button data-lang="ja">JP</button>
-</div>
-<div class="cv-prog" id="cvProg"></div></div>
+</div></div></div>
 <div class="cv-wrap"><section class="cv-case" id="cv-biennale" data-no-chips hidden>
 <p class="cv-kick" data-i18n="p2Badge"></p>
 <h1 class="cv-title">Biennale Guide — SeMA</h1>
@@ -354,6 +358,21 @@
 <div class="cv-blk"><h2 data-i18n="csH7"></h2><div class="cv-refl"><div><h3 data-i18n="csWork"></h3><p data-i18n="oRefW"></p></div><div><h3 data-i18n="csDiff"></h3><p data-i18n="oRefD"></p></div></div></div>
 <a class="cv-next" href="#" data-next="cv-biennale"><span data-i18n="csNext"></span><b>Biennale Guide — SeMA →</b></a>
 </section></div>
+<div class="sk1" id="cvSk1" hidden>
+  <div class="sk1-card" id="cvSk1Card" aria-hidden="true">
+    <div class="sk1-body">
+      <p class="sk1-comment" id="cvSk1Comment"></p>
+      <p class="sk1-code"><span class="sk1-kw">const</span> <span class="sk1-id" id="cvSk1Id"></span> <span class="sk1-eq">=</span> <span class="sk1-val" id="cvSk1Val"></span><span class="sk1-sc">;</span></p>
+    </div>
+  </div>
+  <div class="sk1-bar" id="cvSk1Bar"
+       role="slider" aria-label="Read position"
+       aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" tabindex="0">
+    <div class="sk1-ticks" id="cvSk1Ticks"></div>
+    <div class="sk1-ghost" aria-hidden="true"></div>
+    <div class="sk1-handle" aria-hidden="true"></div>
+  </div>
+</div>
 </div>
 
 <script src="js/i18n.js"></script>

@@ -33,7 +33,7 @@ var I18N={
   "ctH2v": {"en": "<span class=\"ct-line\">Even if the answer isn’t clear yet,</span><span class=\"ct-line\">we can start.</span>", "ko": "<span class=\"ct-line\">아직 답이 선명하지 않아도,</span><span class=\"ct-line\">함께 시작할 수 있습니다.</span>", "ja": "<span class=\"ct-line\">まだ答えがはっきりしていなくても、</span><span class=\"ct-line\">一緒に始められます。</span>"},
   "footL": {"en": "© 2026 Juun Ree · Seoul · Tokyo", "ko": "© 2026 Juun Ree · 서울 · 도쿄", "ja": "© 2026 Juun Ree · ソウル · 東京"},
   "footR": {"en": "Designed by me, coded with AI.", "ko": "직접 디자인하고, AI와 함께 코딩했습니다.", "ja": "デザインは自分で、コーディングはAIと共に。"},
-  "csBack": {"en": "← All work", "ko": "← 전체 작업", "ja": "← ワーク一覧へ"},
+  "csBack": {"en": "All work", "ko": "전체 작업", "ja": "ワーク一覧"},
   "csRole": {"en": "Role", "ko": "역할", "ja": "役割"},
   "csTeam": {"en": "Team", "ko": "팀", "ja": "チーム"},
   "csTime": {"en": "Timeline", "ko": "기간", "ja": "期間"},
@@ -183,6 +183,10 @@ function commitLang(l,instant){
     if(el.closest('.sb, #scrollTopbar, .case-lang'))return;
     var d=I18N[el.getAttribute('data-i18n')];
     if(d&&d[l]!=null)el.innerHTML=d[l];
+  });
+  document.querySelectorAll('[data-i18n-aria]').forEach(function(el){
+    var d=I18N[el.getAttribute('data-i18n-aria')];
+    if(d&&d[l]!=null)el.setAttribute('aria-label',d[l]);
   });
   document.querySelectorAll('.sb-lang button, .scroll-topbar__lang button').forEach(function(b){
     var on=b.getAttribute('data-lang')===l;

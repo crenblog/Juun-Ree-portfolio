@@ -115,10 +115,56 @@
     .sb-nav a.active { color: var(--teal); }
     .sb-nav .n { font-size: 12px; color: var(--faint); font-weight: 500; }
 
-    .sb-sub { overflow: hidden; max-height: 0; transition: max-height .4s ease; visibility: hidden; }
-    .sb-sub.open { max-height: 300px; visibility: visible; }
-    .sb-sub a { padding: 8px 0 8px 20px; font-size: 14px; font-weight: 500; color: var(--sub); }
-    .sb-sub a:hover { padding-left: 28px; }
+    /* max-height matches content (~182px) so the 0.4s close clips All work
+       with the project rows instead of collapsing empty space first.
+       Visibility is delayed on close so the slide stays visible. */
+    .sb-sub {
+      overflow: hidden;
+      max-height: 0;
+      visibility: hidden;
+      transition: max-height .4s ease, visibility 0s linear .4s;
+    }
+    .sb-sub.open {
+      max-height: 200px;
+      visibility: visible;
+      transition: max-height .4s ease, visibility 0s;
+    }
+    .sb-sub a,
+    .sb-all-work {
+      padding: 8px 0 8px 20px;
+      font-size: 14px;
+      font-weight: 500;
+      color: #4A4A4A;
+      transition: all 0.2s ease;
+    }
+    .sb-sub a:hover,
+    .sb-all-work:hover { padding-left: 28px; }
+    /* Subnav footer: 16px to the hairline on both sides. Sticky bottom keeps
+       All work riding up with the collapsing panel instead of being the first
+       row overflow:hidden clips away. */
+    .sb-all-work {
+      position: sticky;
+      bottom: 0;
+      z-index: 1;
+      margin-top: 8px;
+      padding: 16px 0 20px 20px;
+      color: #0C3024;
+      font-weight: 600;
+      background: var(--bg);
+    }
+    /* Align the divider to the indented project-name axis, not the Work heading. */
+    .sb-all-work::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      right: 0;
+      left: 20px;
+      height: 1px;
+      background: color-mix(in srgb, var(--border-soft) 45%, var(--bg));
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .sb-sub, .sb-sub.open { transition: none; }
+    }
     
     .sb-foot { margin-top: auto; padding-top: 18px;
       font-size: 11px; line-height: 1.5; letter-spacing: .08em; text-transform: uppercase; color: var(--faint); }
@@ -280,6 +326,29 @@
        → 세 행 모두 여백 위로 텍스트가 보이지 않으면서 같은 위치에 도착하려면 최소 구간 이하여야 하므로 28px 고정 (5px 버퍼) */
     .idx-row { scroll-margin-top: 28px; }
     .idx-list.hovering .idx-row:hover { opacity: 1; }
+    /* Future archive marker: deliberately presentational only until work.html is connected. */
+    .all-work-placeholder {
+      display: block;
+      width: fit-content;
+      padding: 64px 0 14px;
+      color: var(--teal);
+      font-size: clamp(24px, 2vw, 30px);
+      font-weight: 700;
+      letter-spacing: -.025em;
+      line-height: 1.15;
+      cursor: pointer;
+      text-decoration: none;
+      text-decoration-color: currentColor;
+      text-decoration-thickness: 2px;
+      text-underline-offset: 0.28em;
+    }
+    @media (hover: hover) {
+      .all-work-placeholder:hover {
+        text-decoration: underline;
+        text-decoration-thickness: 2px;
+        text-underline-offset: 0.28em;
+      }
+    }
     .pv { 
       position: absolute; inset: 0; opacity: 0; transition: opacity 0.2s; 
       display: flex; align-items: center; justify-content: center;
@@ -548,6 +617,7 @@
 
     /* ── Language Switcher ── */
     .sb-lang { position: fixed; top: 24px; right: 24px; z-index: 100; isolation: isolate; display: flex; align-items: center; border-radius: 99px; padding: 4px;
+      overflow: hidden;
       background: rgba(241,237,232,.28); /* 틴트만 — 멀리서 없어 보이지만 대비 안전망 */
       backdrop-filter: blur(20px) saturate(180%); -webkit-backdrop-filter: blur(20px) saturate(180%);
       border: 1px solid rgba(26,26,26,.10); /* 구분은 이 1px 선이 담당 */
@@ -600,16 +670,37 @@
 .pv-c{background-image:url("../assets/images/03-off.svg");background-size:cover;background-position:center}
 .case-view{position:fixed;inset:0;background:var(--bg);z-index:40;overflow-y:auto;opacity:0;pointer-events:none;transform:translateY(14px);transition:opacity .26s ease,transform .34s cubic-bezier(.22,1,.36,1)}
 .case-view.open{opacity:1;pointer-events:auto;transform:none}
-.cv-top{position:sticky;top:0;z-index:5;background:rgba(241,237,232,.88);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border-bottom:1px solid var(--border-soft)}
-.cv-topin{max-width:1120px;margin:0 auto;min-height:84px;padding:0 clamp(20px,4vw,48px);padding-right:max(clamp(20px,4vw,48px),calc(158px - max(0px,(100vw - 1120px)/2)));display:flex;align-items:center;gap:clamp(14px,2.4vw,28px)}
-.cv-back{background:none;border:none;font:inherit;font-size:13px;font-weight:600;color:var(--teal);cursor:pointer;padding:6px 0;white-space:nowrap}
-.cv-back:hover{text-decoration:underline}
-.cv-chips{display:flex;gap:clamp(12px,2vw,22px);overflow-x:auto;font-size:12.5px;color:var(--faint);scrollbar-width:none;flex:1}
+.cv-top{position:relative;z-index:5;height:0;min-height:0;overflow:visible;background:transparent;border:none;pointer-events:none}
+.cv-topin{max-width:none;margin:0;min-height:0;height:0;padding:0;display:flex;align-items:center;gap:clamp(14px,2.4vw,28px);pointer-events:none}
+.cv-back{
+  box-sizing:border-box;pointer-events:none;visibility:hidden;position:fixed;top:20px;left:20px;z-index:1100;flex:none;
+  width:46px;height:46px;padding:0;margin:0;
+  display:inline-flex;align-items:center;justify-content:center;
+  color:var(--teal);cursor:pointer;
+  background:rgba(241,237,232,.28);
+  border:1px solid rgba(26,26,26,.10);
+  box-shadow:0 4px 20px rgba(3,16,12,.06);
+  backdrop-filter:blur(20px) saturate(180%);-webkit-backdrop-filter:blur(20px) saturate(180%);
+  border-radius:50%;
+}
+.case-view.open .cv-back{pointer-events:auto;visibility:visible}
+.cv-back__icon{width:18px;height:18px;display:block}
+@supports not ((backdrop-filter:blur(1px)) or (-webkit-backdrop-filter:blur(1px))){
+  .cv-back{background:rgba(241,237,232,.92)}
+}
+/* Compact language pill is 44px buttons + 4px pad + 1px border = 54px. */
+@media (max-width: 1079px) {
+  .cv-back { width: 54px; height: 54px; top: 20px; left: 20px; }
+  .cv-back__icon { width: 21px; height: 21px; }
+}
+@media (max-width: 599px) {
+  .cv-back { top: 16px; left: 24px; }
+}
+.cv-chips{display:flex;gap:clamp(12px,2vw,22px);overflow-x:auto;font-size:12.5px;color:var(--faint);scrollbar-width:none;flex:1;pointer-events:auto}
 .cv-chips[hidden]{display:none}
 .cv-chips::-webkit-scrollbar{display:none}
 .cv-chips a{color:inherit;text-decoration:none;white-space:nowrap;padding:6px 0}
 .cv-chips a:hover{color:var(--teal)}
-.cv-prog{position:absolute;left:0;bottom:0;height:2px;background:var(--teal);width:0;transition:width .12s linear}
 .cv-wrap{max-width:890px;margin:0 auto;padding:clamp(40px,6vh,72px) clamp(20px,4vw,48px) 130px}
 .cv-kick{font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--faint);font-weight:600}
 .cv-title{font-size:clamp(34px,4.6vw,64px);letter-spacing:-.03em;line-height:1.04;margin-top:14px}
@@ -666,6 +757,86 @@ html:lang(ko) .cv-stats span,html:lang(ko) .cv-meta-line{word-break:keep-all}
 .cv-next b{font-size:clamp(20px,2.6vw,30px);letter-spacing:-.02em;color:var(--teal)}
 .cv-next:hover b{text-decoration:underline}
 @media (max-width:860px){.cv-meta{grid-template-columns:1fr 1fr}.cv-feat{grid-template-columns:1fr}.cv-feat.rev .cv-figsm{order:0}.cv-refl{grid-template-columns:1fr}.cv-chips{display:none}}
+
+.sk1{
+  --p:0;--h:0;
+  box-sizing:border-box;
+  position:fixed;right:24px;bottom:24px;z-index:60;
+  width:314px;
+  display:flex;flex-direction:column;align-items:flex-start;gap:8px;
+  pointer-events:none;
+}
+.sk1[hidden]{display:none!important}
+.sk1-card,.sk1-bar{
+  box-sizing:border-box;
+  background:rgba(241,237,232,.62);
+  border:1px solid rgba(26,26,26,.10);
+  box-shadow:0 4px 20px rgba(3,16,12,.06);
+  backdrop-filter:blur(16px) saturate(140%);
+  -webkit-backdrop-filter:blur(16px) saturate(140%);
+  border-radius:.75rem;
+  corner-shape:superellipse(1.6);
+}
+@supports not ((backdrop-filter:blur(1px)) or (-webkit-backdrop-filter:blur(1px))){
+  .sk1-card,.sk1-bar{background:rgba(241,237,232,.92)}
+}
+.sk1-card{
+  width:314px;height:auto;padding:13px 16px;
+  opacity:0;transform:translateY(6px);
+  transition:opacity .2s ease,transform .2s ease;
+  pointer-events:none;
+}
+.sk1-card.is-on{opacity:1;transform:none}
+.sk1-comment{display:none}
+.sk1-code{
+  margin:0;
+  font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  font-size:12px;line-height:17px;font-weight:400;color:var(--teal);
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
+.sk1-kw,.sk1-id,.sk1-eq,.sk1-val,.sk1-sc{color:var(--teal);font-weight:400}
+.sk1-bar{
+  position:relative;isolation:isolate;
+  display:flex;flex-direction:row;align-items:center;
+  width:314px;height:40px;padding:0 20px;
+  cursor:ew-resize;touch-action:none;pointer-events:auto;
+  user-select:none;-webkit-user-select:none;
+}
+.sk1-bar:focus-visible{outline:2px solid var(--focus);outline-offset:3px}
+.sk1-ticks{
+  display:flex;flex-direction:row;justify-content:center;align-items:center;
+  padding:0;gap:6px;
+  width:274px;height:40px;
+  flex:none;z-index:0;
+}
+.sk1-tick{
+  width:1px;height:15px;flex:none;
+  background:#1A1A1A;opacity:.2;
+}
+.sk1-tick.is-major{opacity:1}
+.sk1-ghost,.sk1-handle{
+  position:absolute;width:6px;height:24px;top:8px;
+  border-radius:999px;pointer-events:none;
+}
+.sk1-ghost{
+  left:calc(20px + var(--h, 0) * (100% - 46px));
+  background:var(--teal);opacity:0;z-index:1;
+}
+.sk1.is-hover .sk1-ghost{opacity:.4}
+.sk1.is-drag .sk1-ghost{opacity:0}
+.sk1-handle{
+  left:calc(20px + var(--p, 0) * (100% - 46px));
+  background:var(--teal);z-index:2;
+}
+@media (max-width:859px){
+  .sk1{left:16px;right:16px;bottom:16px;width:auto}
+  .sk1-card{display:none!important}
+  .sk1-bar,.sk1-ticks{width:100%}
+  .sk1-ticks{justify-content:space-between;gap:0}
+}
+@media (prefers-reduced-motion:reduce){
+  .sk1-card{transition:none;transform:none}
+}
 
 /* ═══════════════════════════════════════════════════════════════════════
    다국어 타이포그래피 동기화 레이어 (Multiscript Sync Layer)
@@ -849,6 +1020,7 @@ html:lang(en) .case-lang, html:lang(ko) .case-lang, html:lang(ja) .case-lang {
     .scroll-topbar__brand { font-size: 15px; font-weight: 800; letter-spacing: .15em; color: var(--teal); text-decoration: none; }
     .scroll-topbar__lang {
       position: relative; display: flex; align-items: center; padding: 4px; border-radius: 999px;
+      overflow: hidden;
       background: rgba(241,237,232,.28); border: 1px solid rgba(26,26,26,.10);
       box-shadow: 0 4px 20px rgba(3,16,12,.06);
       backdrop-filter: blur(20px) saturate(180%);
@@ -1117,21 +1289,44 @@ html:lang(en) .case-lang, html:lang(ko) .case-lang, html:lang(ja) .case-lang {
     .sb-lang button:not(.on), .scroll-topbar__lang button:not(.on) { color: #4b4840; }
     .r-num { opacity: .55; }
 
-    /* A case study is one modal state, not a second copy of site navigation. */
+    /* A case study is one modal state, not a second copy of site navigation.
+       #siteLang stays the same node so language chrome does not remount. */
     body.case-open .sb, body.case-open #scrollTopbar { visibility: hidden; pointer-events: none; }
-    /* Compact case header still owns a local pill; desktop keeps #siteLang. */
-    .cv-top .case-lang {
-      position: absolute;
-      top: 0;
-      bottom: 0;
-      right: 20px;
-      height: max-content;
-      margin-top: auto;
-      margin-bottom: auto;
-      z-index: 2;
+    .case-lang { visibility: hidden; pointer-events: none; display: none !important; }
+    /* Do not transform #siteLang — its indicator already uses transform.
+       Hide case chrome with `top` so the main-page pill geometry stays intact. */
+    body.case-open #siteLang {
+      transition: top .34s cubic-bezier(.22,1,.36,1), opacity .15s ease;
     }
-    .case-lang { visibility: hidden; pointer-events: none; }
-    body.case-open .case-lang { visibility: visible; pointer-events: auto; }
+    body.case-open .cv-back {
+      transition: transform .34s cubic-bezier(.22,1,.36,1), opacity .15s ease;
+    }
+    body.case-open.case-chrome-away #siteLang {
+      top: -80px !important;
+      opacity: 0;
+      pointer-events: none;
+    }
+    body.case-open.case-chrome-away .cv-back {
+      transform: translate3d(0, -120%, 0);
+      opacity: 0;
+      pointer-events: none;
+    }
+    @media (prefers-reduced-motion: reduce) {
+      body.case-open #siteLang,
+      body.case-open .cv-back { transition: none; }
+    }
+    @media (max-width: 599px) {
+      body.case-open #siteLang {
+        display: flex !important;
+        visibility: visible !important;
+        pointer-events: auto !important;
+        position: fixed;
+        top: 16px;
+        right: 24px;
+        z-index: 1100;
+      }
+      body.case-open.case-chrome-away #siteLang { pointer-events: none !important; }
+    }
     .case-view { z-index: 1000; }
     .case-view[aria-hidden="true"] { pointer-events: none; }
     .cv-title:focus { outline: none; }
@@ -1169,4 +1364,3 @@ html:lang(en) .case-lang, html:lang(ko) .case-lang, html:lang(ja) .case-lang {
       html:lang(ko) #contact .ct-h2 { font-size: clamp(16px, 5.1vw, 21px) !important; line-height: 1.55; letter-spacing: -.03em; }
       html:lang(ja) #contact .ct-h2 { font-size: clamp(15px, 4.7vw, 20px) !important; line-height: 1.62; letter-spacing: -.02em; }
     }
-
