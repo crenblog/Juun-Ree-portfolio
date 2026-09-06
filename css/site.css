@@ -1,0 +1,1172 @@
+    /* MOBILE-SCOPE LOCK — Preserve the provided Quiet Editorial Index exactly. Only <=599px EN/JA hero composition may change; desktop, Korean, copy, interaction and palette are off-limits. */
+    /* ══════════════════ Design tokens ══════════════════ */
+    :root {
+      --bg: #F1EDE8;
+      --teal: #0C3024;
+      --teal-soft: rgba(12,48,36, .07);
+      --border: #B8A99A;
+      --border-soft: #DED3C8;
+      --ink: #1a1a1a;
+      --sub: #4A4A4A;
+      --faint: #5E584E;
+      --card: #F9F7F4;
+      --amber: #7A5B15;
+      --amber-soft: #F2E8D2;
+      /* ── 황금비 레이아웃 (Golden-ratio split) ─────────────────
+         sidebar : main = 1 : φ²  (φ² = 2.618…)
+         sidebar 폭 = 100 / (1+φ²) ≈ 27.6373vw → 메인이 2.618배
+         뷰포트와 무관하게 분할선 위치 일정 · ≤1024px은 세로 스택이라 미적용
+         검토 후 폐기: 1:φ(38.2%) = 좌측 과대 / 1:2φ(23.6%) = 사이드바 협소 */
+      --sb-w: min(27.6373vw, 398px);
+      --focus: #007AFF;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; scrollbar-gutter: stable; }
+    @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+
+    /* First paint must never expose a half-translated page. Subsequent language
+       switches remain visible until the target dictionary and CJK font are ready. */
+    html.i18n-pending body { visibility: hidden; }
+    html.i18n-pending body::before {
+      content: ''; display: block; min-height: 100vh; background: var(--bg);
+    }
+
+    /* Compact screens are a vertical reading surface. The adaptive preview may
+       travel visually, but it must never widen the document or permit side-swipe drift. */
+    @media (max-width: 1079px) {
+      html, body {
+        max-width: 100%;
+        overflow-x: hidden;
+        overflow-x: clip;
+        overscroll-behavior-x: none;
+      }
+    }
+
+    body {
+      font-family: 'Wanted Sans Variable', 'Wanted Sans', 'Pretendard JP', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: var(--bg); color: var(--ink);
+      font-size: 17px; line-height: 1.6; -webkit-font-smoothing: antialiased;
+      overflow-x: hidden;
+    }
+
+    /* Language-invariant chrome: this is intentionally outside every language
+       branch. The PC sidebar and compact mobile/tablet headers must keep the
+       exact EN geometry (font metrics, line-height, tracking, and flow) even
+       while the document body changes language. */
+    .a2-noise-defs {
+      display: block;
+      position: absolute;
+      width: 0;
+      height: 0;
+    }
+    .sb,
+    #scrollTopbar,
+    .case-lang {
+      font-family: 'Wanted Sans Variable', 'Wanted Sans', 'Inter', ui-sans-serif, system-ui, sans-serif !important;
+      line-height: 1.6 !important;
+      letter-spacing: normal !important;
+      text-autospace: none !important;
+    }
+    .sb *,
+    #scrollTopbar *,
+    .case-lang * {
+      font-family: inherit;
+    }
+
+    .skip-link {
+      /* Accessibility control only: remove it from the visual canvas entirely
+         until keyboard focus, rather than translating a visible chip off-screen. */
+      position: fixed; left: 0; top: 0; width: 1px; height: 1px;
+      overflow: hidden; clip: rect(0 0 0 0); clip-path: inset(50%); white-space: nowrap;
+    }
+    .skip-link:focus, .skip-link:focus-visible, .skip-link.is-focused {
+      left: 16px !important; top: 16px !important; width: auto !important; height: auto !important; overflow: visible !important;
+      clip: auto !important; clip-path: none !important; padding: 8px 10px; z-index: 1200;
+      background: var(--teal); color: white; border-radius: 2px;
+    }
+
+    a { color: inherit; text-decoration: none; transition: all 0.2s ease; }
+    a:focus-visible, button:focus-visible { 
+      outline: 2px solid var(--focus); outline-offset: 3px; border-radius: 2px; 
+    }
+    img { max-width: 100%; display: block; }
+
+    /* ══════════════════ Layout ══════════════════ */
+    .layout { display: flex; min-height: 100vh; }
+    
+    .sb {
+      width: var(--sb-w); flex-shrink: 0; position: sticky; top: 0; height: 100vh;
+      border-right: 1px solid var(--border);
+      display: flex; flex-direction: column; padding: 48px 32px;
+      background: var(--bg); z-index: 20;
+    }
+    
+    .sb-brand { font-weight: 800; letter-spacing: .16em; font-size: 18px; color: var(--teal); }
+    .sb-tag { margin-top: 16px; font-size: 15px; line-height: 1.6; color: var(--sub); max-width: 30ch; }
+    .sb-tag b { color: var(--ink); }
+    
+    .sb-nav { margin-top: 48px; display: flex; flex-direction: column; gap: 2px; }
+    .sb-nav a {
+      font-size: 16px; font-weight: 600; padding: 12px 0;
+      display: flex; justify-content: space-between; align-items: baseline;
+    }
+    .sb-nav a:hover { color: var(--teal); padding-left: 8px; }
+    .sb-nav a.active { color: var(--teal); }
+    .sb-nav .n { font-size: 12px; color: var(--faint); font-weight: 500; }
+
+    .sb-sub { overflow: hidden; max-height: 0; transition: max-height .4s ease; visibility: hidden; }
+    .sb-sub.open { max-height: 300px; visibility: visible; }
+    .sb-sub a { padding: 8px 0 8px 20px; font-size: 14px; font-weight: 500; color: var(--sub); }
+    .sb-sub a:hover { padding-left: 28px; }
+    
+    .sb-foot { margin-top: auto; padding-top: 18px;
+      font-size: 11px; line-height: 1.5; letter-spacing: .08em; text-transform: uppercase; color: var(--faint); }
+    .sb-foot a { color: inherit; }
+    .sb-status { display: flex; align-items: center; }
+    .dot { display: inline-block; width: 6px; height: 6px; border-radius: 50%; background: #2E7D4F; margin-right: 8px; flex: none; }
+
+    .main { flex: 1; min-width: 0; position: relative; padding: 0 clamp(24px, 6vw, 96px) 120px; z-index: 10; }
+    section { padding-top: clamp(80px, 12vh, 160px); }
+    
+    .kicker {
+      font-size: 13px; font-weight: 700; letter-spacing: .15em; text-transform: uppercase;
+      color: var(--faint); margin-bottom: 24px; display: flex; align-items: center; gap: 12px;
+    }
+
+    /* ══════════════════ Hero ══════════════════ */
+    /* ── Hero 제목 ↔ 사이드바 태그라인 광학 정렬 (optical cap-top alignment) ──
+       목표: h1 첫 줄 cap-top = "Complexity stays. Confusion goes." 줄 cap-top (정확히 일치)
+       태그라인 2번째 줄 cap-top (뷰포트 기준 px 고정):
+         48(sb 상단 패딩) + 28.8(brand 18px×1.6) + 16(tag margin-top)
+         + 24(tag 첫 줄 15px×1.6) + 4.5(반쪽 leading) + ~3(ascent→cap 갭) ≈ 124.3px
+       ※ vh 기반 패딩은 px 고정 사이드바와 뷰포트 높이별로 어긋나므로 고정값으로 교체 */
+    .hero { padding-top: calc(48px + 28.8px + 16px + 24px + 4.5px + 3px); } /* = 124.3px · tag margin-top(16px) 변경 시 이 항도 연동 */
+    .hero h1 {
+      font-size: clamp(48px, 6vw, 104px);
+      line-height: 1.02; font-weight: 800; letter-spacing: -.04em; max-width: 15ch;
+      /* 광학 정렬 폴백: cap 위의 반쪽-leading + 폰트 내부 여백(ascent→cap)을 em으로 상쇄.
+         --cap-gap은 폰트 메트릭 종속 → 폰트 교체 시 이 값만 조정 */
+      --cap-gap: 0.21em;
+      margin-top: calc((1em - 1lh) / 2 - var(--cap-gap));
+    }
+    /* EN만 4px 위로: 라틴 대문자는 한글/かな·漢字보다 같은 cap-top에서 상대적으로 낮아 보이는 광학 보정 (실물 확인 기준) */
+    html:lang(en) .hero h1 { margin-top: calc((1em - 1lh) / 2 - var(--cap-gap) - 4px); }
+    /* 정식 해법: 지원 브라우저는 폰트 메트릭으로 cap 라인까지 정확히 트림 (Chrome 133+, Safari 18.2+) */
+    @supports (text-box-trim: trim-start) and (text-box-edge: cap alphabetic) {
+      .hero h1 { text-box-trim: trim-start; text-box-edge: cap alphabetic; margin-top: 0; }
+      html:lang(en) .hero h1 { margin-top: -4px; }
+    }
+    .hero h1 em { font-style: normal; color: var(--teal); }
+    .hero .lede { margin-top: 40px; max-width: 54ch; color: var(--sub); font-size: clamp(18px, 1.5vw, 22px); line-height: 1.6; }
+    .hero .lede b { color: var(--ink); }
+    .hero-lead { max-width: 54ch; }
+    .hero-lead .lede {
+      text-decoration: underline dotted;
+      text-decoration-thickness: 1.5px;
+      text-underline-offset: 8px;
+      text-decoration-color: var(--teal);
+      cursor: default;
+      transition: text-decoration-color .2s ease, color .2s ease;
+    }
+    .hero-more {
+      max-width: 42em;
+      font-size: 14px;
+      line-height: 1.65;
+      color: var(--sub);
+    }
+    .hero-more p { margin: 0 0 12px; }
+    .hero-more p:last-child { margin-bottom: 0; }
+    .hero-more .nowrap { white-space: nowrap; }
+    .lede-line { display: block; }
+    @media (hover: hover) and (min-width: 1080px) {
+      .hero-more {
+        max-height: 0;
+        opacity: 0;
+        overflow: hidden;
+        margin: 0;
+        transform: translateY(4px);
+        pointer-events: none;
+        transition: max-height .4s ease, opacity .28s ease, transform .28s ease, margin .35s ease;
+      }
+      .hero-lead:hover .lede,
+      .hero-lead:focus-within .lede,
+      .hero-lead.is-hot .lede {
+        text-decoration-style: solid;
+        color: var(--teal);
+      }
+      .hero-lead:hover .hero-more,
+      .hero-lead:focus-within .hero-more,
+      .hero-lead.is-hot .hero-more {
+        max-height: 26em;
+        opacity: 1;
+        margin: 32px 0 12px;
+        transform: none;
+        pointer-events: auto;
+      }
+    }
+    @media (prefers-reduced-motion: reduce) and (hover: hover) and (min-width: 1080px) {
+      .hero-more { max-height: none !important; opacity: 1 !important; transform: none !important; overflow: visible !important; margin: 32px 0 12px !important; pointer-events: auto !important; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .hero-more { transition: none !important; transform: none !important; }
+    }
+    @media (max-width: 1079px), (hover: none) {
+      .hero-lead .lede {
+        cursor: pointer;
+        -webkit-tap-highlight-color: transparent;
+      }
+      .hero-more {
+        max-height: 0;
+        opacity: 0;
+        overflow: hidden;
+        margin: 0;
+        transform: translateY(4px);
+        pointer-events: none;
+        transition: max-height .4s ease, opacity .28s ease, transform .28s ease, margin .35s ease;
+      }
+      .hero-lead.is-open .lede {
+        text-decoration-style: solid;
+        color: var(--teal);
+      }
+      .hero-lead.is-open .hero-more {
+        max-height: 26em;
+        opacity: 1;
+        margin: 32px 0 12px;
+        transform: none;
+        pointer-events: auto;
+      }
+    }
+
+    /* ══════════════════ Work Index (with Hover Reveal) ══════════════════ */
+    .idx-list { margin-top: 32px; border-top: 1px solid var(--border-soft); }
+    .idx-row { 
+      display: grid; grid-template-columns: 80px minmax(0, 1fr); gap: 40px; 
+      padding: 64px 0; border-bottom: 1px solid var(--border-soft);
+      cursor: pointer; position: relative; z-index: 10;
+    }
+    .idx-row:hover .r-body h3 { color: var(--teal); }
+    
+    .r-num { font-weight: 800; font-size: 40px; color: var(--teal); line-height: 1; opacity: 0.3; }
+    .r-body h3 { font-size: clamp(28px, 3.5vw, 52px); font-weight: 800; letter-spacing: -.03em; line-height: 1.1; transition: color 0.3s; }
+    .r-body p { margin-top: 16px; font-size: 18px; color: var(--sub); max-width: 60ch; }
+    
+    .pc-meta { margin-top: 20px; display: flex; flex-wrap: wrap; align-items: baseline; gap: 0; list-style: none; font-size: 13px; line-height: 1.4; color: var(--faint); font-weight: 400; letter-spacing: -.01em; }
+    .pc-meta li::before { content: none; }
+    .pc-meta li + li::before { content: "·"; margin: 0 10px; color: var(--border); font-weight: 400; }
+    
+    .r-side, .idx-row .view-link { display: none; }
+    .badge {
+      font-size: 11px; font-weight: 800; letter-spacing: .1em; text-transform: uppercase;
+      padding: 6px 14px; border-radius: 4px; background: var(--teal-soft); color: var(--teal);
+    }
+    .view-link { font-size: 14px; font-weight: 700; color: var(--teal); text-decoration: underline; text-underline-offset: 4px; margin-top: 0; }
+
+    /* ── Image Hover Preview Styling ── */
+    .idx-prev {
+      position: fixed; z-index: 50; width: 320px; aspect-ratio: 4/3;
+      border-radius: 16px; pointer-events: none; opacity: 0;
+      overflow: hidden; box-shadow: 0 24px 64px rgba(12,48,36, 0.25);
+      background: var(--border-soft);
+      will-change: transform, opacity; /* 위치·크기·기울기·투명도 모두 JS rAF가 구동 — CSS transition 제거 */
+    }
+
+    /* 호버 시 형제 행 흐리게 — 선택된 행과 프리뷰에 시각적 우선순위 부여 */
+    .idx-list .idx-row { transition: opacity .3s ease; }
+    .idx-list.hovering .idx-row { opacity: .38; }
+    /* 스크롤 도착 여백 — 사이드바에서 선택한 행이 뷰포트 상단에 붙지 않고 헤어라인+여백이 함께 보이도록.
+       scroll-margin-top은 scrollIntoView와 해시(#) 이동 모두가 존중하는 표준 오프셋 (브라우저 지원 95%+).
+       값은 임의 선택이 아니라 제약에서 역산: 각 행 위 '텍스트 없는 구간' 실측 = 1행 33px(키커↔리스트 마진 병합), 2·3행 65px
+       → 세 행 모두 여백 위로 텍스트가 보이지 않으면서 같은 위치에 도착하려면 최소 구간 이하여야 하므로 28px 고정 (5px 버퍼) */
+    .idx-row { scroll-margin-top: 28px; }
+    .idx-list.hovering .idx-row:hover { opacity: 1; }
+    .pv { 
+      position: absolute; inset: 0; opacity: 0; transition: opacity 0.2s; 
+      display: flex; align-items: center; justify-content: center;
+      background-size: cover; background-position: center;
+    }
+    .pv.on { opacity: 1; }
+    
+    /* Project covers live in assets/images/. Swap the SVG for a photo with the same filename. */
+    .pv-0 { background-image: url("../assets/images/01-biennale.svg"); }
+    .pv-1 { background-image: url("../assets/images/02-loop.svg"); }
+    .pv-2 { background-image: url("../assets/images/03-off.svg"); }
+    .pv span { color: white; font-weight: 800; font-size: 24px; letter-spacing: 0.1em; opacity: 0.5; }
+
+    /* ══════════════════ About ══════════════════ */
+    .about-grid { display: grid; grid-template-columns: 1.5fr 1fr; gap: 80px; margin-top: 0; align-items: start; }
+    #about .ag-lead .kicker,
+    #about .ag-right .kicker { margin-bottom: 12px; }
+    .ag-p { font-size: 18px; line-height: 1.7; color: var(--sub); margin-bottom: 24px; }
+    .ag-p b { color: var(--ink); }
+    .ag-loc {
+      margin: 0;
+      font-size: 18px;
+      line-height: 1.6;
+      color: var(--ink);
+    }
+    .ag-right .ag-soc { margin: 0; font-size: 16px; color: var(--sub); }
+    .ag-right .ag-soc a {
+      color: inherit;
+      text-decoration: underline;
+      text-underline-offset: 4px;
+      text-decoration-thickness: 1px;
+      transition: color .2s ease;
+    }
+    .ag-right .ag-soc a[href] { cursor: pointer; }
+    .ag-right .ag-soc a:not([href]) { cursor: default; text-decoration-color: var(--border); }
+    .ag-right .ag-soc a[href]:hover { color: var(--teal); }
+    
+    .contact-link {
+      display: inline-block;
+      font-size: clamp(32px, 5vw, 72px); font-weight: 800; letter-spacing: -.03em;
+      color: var(--teal); text-decoration: underline; text-underline-offset: 12px;
+      transition: transform 0.3s;
+    }
+    .contact-link:hover { transform: translateY(-5px); }
+
+    .ct-lead { max-width: 40em; }
+    .ct-h2 {
+      text-decoration: underline dotted;
+      text-decoration-thickness: 1.5px;
+      text-underline-offset: 8px;
+      text-decoration-color: var(--teal);
+      cursor: default;
+      transition: text-decoration-color .2s ease, color .2s ease;
+    }
+    .ct-more {
+      max-width: 42em;
+      font-size: 14px;
+      line-height: 1.65;
+      color: var(--sub);
+    }
+    @media (hover: hover) and (min-width: 1080px) {
+      .ct-more {
+        max-height: 0;
+        opacity: 0;
+        overflow: hidden;
+        margin: 0;
+        transform: translateY(4px);
+        pointer-events: none;
+        transition: max-height .4s ease, opacity .28s ease, transform .28s ease, margin .35s ease;
+      }
+      .ct-lead:hover .ct-h2,
+      .ct-lead:focus-within .ct-h2,
+      .ct-lead.is-hot .ct-h2 {
+        text-decoration-style: solid;
+        color: var(--teal);
+      }
+      .ct-lead:hover .ct-more,
+      .ct-lead:focus-within .ct-more,
+      .ct-lead.is-hot .ct-more {
+        max-height: 12em;
+        opacity: 1;
+        margin: 12px 0 28px;
+        transform: none;
+        pointer-events: auto;
+      }
+    }
+    @media (prefers-reduced-motion: reduce) and (hover: hover) and (min-width: 1080px) {
+      .ct-more { max-height: none !important; opacity: 1 !important; transform: none !important; overflow: visible !important; margin: 12px 0 28px !important; pointer-events: auto !important; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .ct-more { transition: none !important; transform: none !important; }
+    }
+    @media (max-width: 1079px), (hover: none) {
+      .ct-h2 {
+        cursor: pointer;
+        -webkit-tap-highlight-color: transparent;
+      }
+      .ct-more {
+        max-height: 0;
+        opacity: 0;
+        overflow: hidden;
+        margin: 0;
+        transform: translateY(4px);
+        pointer-events: none;
+        transition: max-height .4s ease, opacity .28s ease, transform .28s ease, margin .35s ease;
+      }
+      .ct-lead.is-open .ct-h2 {
+        text-decoration-style: solid;
+        color: var(--teal);
+      }
+      .ct-lead.is-open .ct-more {
+        max-height: 12em;
+        opacity: 1;
+        margin: 12px 0 28px;
+        transform: none;
+        pointer-events: auto;
+      }
+    }
+
+    /* ══════════════════ Responsive ══════════════════ */
+    /* ================== Responsive: Tablet 600-1079px ==================
+       The vertical sidebar becomes a compact two-row horizontal header:
+       row 1 = brand (left) + language pill (right), row 2 = Work / About / Contact.
+       One reading rail: header, hero, and sections share the same gutter. */
+    @media (min-width: 600px) and (max-width: 1079px) {
+      .layout { flex-direction: column; min-height: 0; }
+      .sb {
+        --compact-gutter: clamp(32px, 6vw, 64px);
+        width: 100%; height: auto; min-height: 104px; position: relative; top: auto;
+        padding: 22px var(--compact-gutter) 18px;
+        border-right: none; border-bottom: 1px solid var(--border);
+        display: grid; grid-template-columns: 1fr; align-content: center;
+      }
+      .sb-brand { font-size: 17px; }
+      .sb-tag, .sb-foot { display: none; }
+      .sb-nav {
+        margin: 16px 0 0; padding-right: 166px;
+        display: flex; flex-direction: row; align-items: center;
+        gap: clamp(28px, 4vw, 52px);
+      }
+      .sb-nav a { min-height: 44px; padding: 8px 0; }
+      .sb-nav a:hover { padding-left: 0; } /* the indent hover belongs to the vertical nav only */
+      .sb-sub, .sb-nav .n { display: none !important; }
+      .sb-lang { position: absolute; top: 10px; right: var(--compact-gutter); }
+      .sb-lang button { min-width: 44px; min-height: 44px; padding: 0 12px; }
+      .main { padding: 0 clamp(32px, 6vw, 64px) 100px; }
+      section { padding-top: clamp(96px, 12vh, 128px); }
+      .hero { padding-top: clamp(64px, 8vh, 88px); }
+      .about-grid { grid-template-columns: 1.35fr 1fr; gap: clamp(48px, 8vw, 80px); }
+      .idx-row { grid-template-columns: 64px minmax(0, 1fr); gap: 28px; padding: 54px 0; }
+    }
+
+    /* ================== Compact tablet: 600-899px ==================
+       768px-class screens are broad enough for a horizontal header but not for
+       desktop-like line lengths or a three-column project row. This layer keeps
+       the reading measure deliberate without touching the 900px+ tablet or desktop. */
+    @media (min-width: 600px) and (max-width: 899px) {
+      .hero { max-width: 620px; padding-top: clamp(56px, 7vh, 72px); }
+      .hero h1 { max-width: 12.8ch; font-size: clamp(44px, 7.2vw, 56px); line-height: 1.05; }
+      .hero .lede { max-width: 48ch; font-size: clamp(17px, 2.4vw, 19px); }
+
+      /* Preserve the index hierarchy but let the project copy use a calm,
+         readable measure instead of squeezing it beside a right-side column. */
+      .idx-list { max-width: 640px; }
+      .idx-row { grid-template-columns: 56px minmax(0, 1fr); gap: 20px; padding: 48px 0; }
+      .r-num { font-size: 36px; }
+      .r-side {
+        grid-column: 2; flex-direction: row; align-items: center;
+        justify-content: flex-start; text-align: left; gap: 16px;
+      }
+      .view-link { margin-top: 0; }
+      .pc-meta { margin-top: 20px; }
+
+      .about-grid { grid-template-columns: 1fr; gap: 36px; max-width: 640px; }
+            #contact { max-width: 640px; }
+    }
+    /* Compact About grouping — mobile and single-column tablet only.
+       Design intent: retain the authored large chapter pauses, while making each
+       label + its own content read as one unit across EN/KR/JP. No type metric changes. */
+    @media (max-width: 899px) {
+      #about .about-grid { margin-top: 0; }
+      #about .ag-lead .kicker,
+      #about .ag-right .kicker { margin-bottom: 10px; }
+      #about .ag-collab .kicker { margin-bottom: 32px; }
+      #about .ag-right .ag-p:first-of-type { margin-bottom: 0; }
+      #contact > .kicker { margin-bottom: 32px; }
+    }
+    @media (min-width: 900px) {
+      #about .about-grid { margin-top: 0; }
+      #about .ag-lead .kicker,
+      #about .ag-right .kicker { margin-bottom: 12px; }
+      #about .ag-right .ag-p:first-of-type { margin-bottom: 0; }
+      #about .ag-collab .kicker,
+      #contact > .kicker { margin-bottom: 32px; }
+    }
+
+    /* Quiet Editorial Index — Work has one tablet composition from 600px until
+       desktop. Do not revive the desktop utility column at 900px while the
+       adaptive preview is still active; the preview remains the only right rail. */
+    @media (min-width: 600px) and (max-width: 1079px) {
+      /* Approved Flow rhythm: tablet Hero→Work transition, 600–1079px only. */
+      #work { padding-top: 72px; max-width: 640px; margin-inline: auto; }
+      #work .idx-list { max-width: 640px; }
+      #work .idx-row { grid-template-columns: 56px minmax(0, 1fr); gap: 20px; padding: 48px 0; }
+      #work .r-num { font-size: 36px; }
+      #work .r-side {
+        grid-column: 2; flex-direction: row; align-items: center;
+        justify-content: flex-start; text-align: left; gap: 16px;
+      }
+      #work .view-link { margin-top: 0; }
+      #work .pc-meta { margin-top: 20px; }
+    }
+
+    /* ================== Responsive: Mobile 0-599px ==================
+       Two-row static header (brand + language / nav spread) closed by a hairline,
+       then one-column focused reading on a 24px gutter. */
+    @media (max-width: 599px) {
+      .layout { flex-direction: column; min-height: 0; }
+      .sb {
+        --compact-gutter: 24px;
+        width: 100%; height: auto; min-height: 116px; position: relative; top: auto;
+        padding: 18px var(--compact-gutter) 12px;
+        border-right: none; border-bottom: 1px solid var(--border);
+        display: grid; grid-template-columns: 1fr;
+      }
+      .sb-brand { font-size: 16px; line-height: 40px; }
+      .sb-tag, .sb-foot { display: none; }
+      .sb-nav {
+        margin: 12px 0 0; display: flex; flex-direction: row;
+        align-items: center; justify-content: space-between; gap: 0;
+      }
+      .sb-nav a {
+        min-height: 44px; padding: 8px 0; flex: 1;
+        justify-content: flex-start; align-items: center;
+      }
+      .sb-nav a:hover { padding-left: 0; }
+      .sb-nav a:nth-of-type(2) { justify-content: center; }
+      .sb-nav a:nth-of-type(3) { justify-content: flex-end; }
+      .sb-nav .n, .sb-sub { display: none !important; }
+      .sb-lang { position: absolute; top: 14px; right: var(--compact-gutter); }
+      .sb-lang button { min-width: 40px; min-height: 40px; padding: 8px 12px; }
+      .main { padding: 0 24px 80px; }
+      section { padding-top: 80px; }
+      .hero { padding-top: 48px; }
+      .hero h1 { font-size: clamp(40px, 11vw, 52px); line-height: 1.06; }
+      html:lang(ko) .hero h1 { font-size: clamp(34px, 9.8vw, 44px); line-height: 1.4; max-width: none; }
+      html:lang(ko) .hero h1 br { display: none; } /* desktop's fixed 3-line break re-composes as natural wrapping on narrow screens */
+      html:lang(ja) .hero h1 { font-size: clamp(33px, 9.4vw, 42px); line-height: 1.38; }
+      .hero .lede { margin-top: 28px; }
+      /* Approved Flow rhythm: only the mobile Hero→Work transition tightens. */
+      #work { padding-top: 64px; }
+      .idx-row { grid-template-columns: 1fr; gap: 20px; padding: 44px 0; }
+      .r-side { align-items: flex-start; text-align: left; }
+      .pc-meta { flex-wrap: wrap; }
+      .about-grid { grid-template-columns: 1fr; gap: 36px; }
+      #contact { padding-top: 88px; }
+      .contact-link {
+        max-width: 100%; font-size: clamp(27px, 9.3vw, 36px);
+        letter-spacing: -.04em; text-underline-offset: 7px;
+      }
+      footer {
+        margin-top: 80px !important; padding-top: 28px !important;
+        flex-direction: column; align-items: flex-start; gap: 10px; line-height: 1.6;
+      }
+    }
+
+    /* ── Language Switcher ── */
+    .sb-lang { position: fixed; top: 24px; right: 24px; z-index: 100; isolation: isolate; display: flex; align-items: center; border-radius: 99px; padding: 4px;
+      background: rgba(241,237,232,.28); /* 틴트만 — 멀리서 없어 보이지만 대비 안전망 */
+      backdrop-filter: blur(20px) saturate(180%); -webkit-backdrop-filter: blur(20px) saturate(180%);
+      border: 1px solid rgba(26,26,26,.10); /* 구분은 이 1px 선이 담당 */
+      box-shadow: 0 4px 20px rgba(3,16,12,.06); }
+    @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+      .sb-lang { background: rgba(241,237,232,.92); } /* 폴백: 블러 없으면 불투명으로 */
+    }
+    .sb-lang button { position: relative; z-index: 2; border: none; background: none; padding: 6px 12px; font-size: 12px; font-weight: 700; cursor: pointer; border-radius: 99px; color: var(--faint); transition: color 150ms ease; }
+    .sb-lang button.on { color: white; }
+    .sb-lang .indicator {
+      position: absolute; top: 0; left: 0; z-index: 1;
+      width: 44px; height: 44px;
+      background: var(--teal) !important; opacity: 1; border-radius: 50%;
+      transition: transform 220ms cubic-bezier(0.22, 1, 0.36, 1);
+      pointer-events: none;
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .sb-lang .indicator { transition: none !important; }
+    }
+
+    /* Compact-only motion safety: PC keeps the original geometry and transition.
+       Mobile/tablet use one fixed circle and animate only its compositor-friendly
+       transform, avoiding a width/height pop during language changes. */
+    @media (max-width: 1079px) {
+      .sb-lang--compact .indicator,
+      #scrollTopbar .scroll-topbar__lang .indicator,
+      .case-lang .indicator {
+        width: 44px;
+        height: 44px;
+        top: 5px;
+        bottom: auto;
+        transition: transform 260ms cubic-bezier(0.22, 1, 0.36, 1);
+        will-change: transform;
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        .sb-lang--compact .indicator,
+        #scrollTopbar .scroll-topbar__lang .indicator,
+        .case-lang .indicator {
+          transition: none !important;
+          will-change: auto;
+        }
+      }
+    }
+  
+/* ---- case study overlay (ported from v2 build) ---- */
+.idx-row{cursor:pointer}
+.pv-a{background-image:url("../assets/images/01-biennale.svg");background-size:cover;background-position:center}
+.pv-b{background-image:url("../assets/images/02-loop.svg");background-size:cover;background-position:center}
+.pv-c{background-image:url("../assets/images/03-off.svg");background-size:cover;background-position:center}
+.case-view{position:fixed;inset:0;background:var(--bg);z-index:40;overflow-y:auto;opacity:0;pointer-events:none;transform:translateY(14px);transition:opacity .26s ease,transform .34s cubic-bezier(.22,1,.36,1)}
+.case-view.open{opacity:1;pointer-events:auto;transform:none}
+.cv-top{position:sticky;top:0;z-index:5;background:rgba(241,237,232,.88);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border-bottom:1px solid var(--border-soft)}
+.cv-topin{max-width:1120px;margin:0 auto;min-height:84px;padding:0 clamp(20px,4vw,48px);padding-right:max(clamp(20px,4vw,48px),calc(158px - max(0px,(100vw - 1120px)/2)));display:flex;align-items:center;gap:clamp(14px,2.4vw,28px)}
+.cv-back{background:none;border:none;font:inherit;font-size:13px;font-weight:600;color:var(--teal);cursor:pointer;padding:6px 0;white-space:nowrap}
+.cv-back:hover{text-decoration:underline}
+.cv-chips{display:flex;gap:clamp(12px,2vw,22px);overflow-x:auto;font-size:12.5px;color:var(--faint);scrollbar-width:none;flex:1}
+.cv-chips[hidden]{display:none}
+.cv-chips::-webkit-scrollbar{display:none}
+.cv-chips a{color:inherit;text-decoration:none;white-space:nowrap;padding:6px 0}
+.cv-chips a:hover{color:var(--teal)}
+.cv-prog{position:absolute;left:0;bottom:0;height:2px;background:var(--teal);width:0;transition:width .12s linear}
+.cv-wrap{max-width:890px;margin:0 auto;padding:clamp(40px,6vh,72px) clamp(20px,4vw,48px) 130px}
+.cv-kick{font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--faint);font-weight:600}
+.cv-title{font-size:clamp(34px,4.6vw,64px);letter-spacing:-.03em;line-height:1.04;margin-top:14px}
+.cv-sub{font-size:clamp(16px,1.6vw,21px);line-height:1.55;color:var(--sub);max-width:640px;margin-top:18px}
+.cv-open{margin-top:22px;max-width:22em;font-size:clamp(20px,2.4vw,32px);font-weight:800;letter-spacing:-.03em;line-height:1.35;color:var(--teal)}
+.cv-stats{display:flex;flex-wrap:wrap;gap:28px 56px;margin-top:28px}
+.cv-stats b{display:block;font-size:clamp(22px,2.2vw,28px);font-weight:800;letter-spacing:-.04em;line-height:1.1;color:var(--teal)}
+.cv-stats span{display:block;margin-top:7px;font-size:12px;letter-spacing:.02em;font-weight:400;color:var(--faint)}
+#cv-biennale .cv-sub{margin-top:20px;max-width:36em}
+#cv-biennale .cv-meta-line{margin-top:22px}
+#cv-biennale .cv-fig{margin-top:clamp(36px,5vh,52px)}
+.cv-meta-line{margin-top:16px;font-size:13px;line-height:1.4;font-weight:400;color:var(--faint);letter-spacing:-.01em}
+html:lang(ko) .cv-open{word-break:keep-all;line-height:1.5;letter-spacing:-.02em}
+html:lang(ja) .cv-open{line-height:1.5}
+html:lang(ko) .cv-stats span,html:lang(ko) .cv-meta-line{word-break:keep-all}
+.cv-meta{display:grid;grid-template-columns:repeat(4,1fr);gap:18px;border-top:1px solid var(--border-soft);border-bottom:1px solid var(--border-soft);margin-top:34px;padding:18px 0}
+.cv-meta span{display:block;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--faint);margin-bottom:5px}
+.cv-meta b{font-size:14px;font-weight:600}
+.cv-fig{margin-top:clamp(28px,4vh,44px);aspect-ratio:16/8;border-radius:0;display:flex;align-items:center;justify-content:center;color:#F1EDE8;font-weight:800;font-size:clamp(44px,7vw,96px);letter-spacing:-.03em;overflow:hidden;clip-path:url(#jrFigMask);-webkit-clip-path:url(#jrFigMask)}
+.cv-fig[data-shape="rect"]{clip-path:none;-webkit-clip-path:none;border-radius:14px}
+
+    /* Optional media (not used on 01–03 yet). Paste from templates/media.html.
+       Phone = portrait UI. Video = landscape process/product film. */
+    .jr-phone{width:min(280px,72%);margin:clamp(28px,4vh,44px) auto 0}
+    .jr-phone__bezel{background:#1a1a1a;border-radius:36px;padding:10px;box-shadow:0 18px 40px rgba(3,16,12,.12)}
+    .jr-phone__island{width:72px;height:18px;margin:4px auto 8px;background:#0d0d0d;border-radius:99px}
+    .jr-phone__screen{aspect-ratio:9/19.5;border-radius:26px;overflow:hidden;background:#111}
+    .jr-phone__screen img,.jr-phone__screen video{width:100%;height:100%;object-fit:cover;display:block}
+    .cv-feat .jr-phone{width:100%;margin:0}
+    .jr-video{margin-top:clamp(28px,4vh,44px);aspect-ratio:16/9;overflow:hidden;background:#111;clip-path:url(#jrFigMask);-webkit-clip-path:url(#jrFigMask)}
+    .jr-video[data-shape="rect"]{clip-path:none;-webkit-clip-path:none;border-radius:14px}
+    .jr-video video{width:100%;height:100%;object-fit:cover;display:block}
+.cv-blk{margin-top:clamp(72px,10vh,120px)}
+.cv-text{max-width:680px}
+.cv-blk h2{font-size:clamp(22px,2.4vw,30px);letter-spacing:-.02em;margin-bottom:18px}
+.cv-blk p{font-size:16px;line-height:1.7;color:var(--sub)}
+.cv-big{font-size:clamp(19px,2vw,24px)!important;line-height:1.5!important;max-width:780px}
+.cv-evi{margin-top:22px;font-size:13.5px!important;color:var(--faint)!important;border-left:3px solid var(--teal);padding-left:14px;max-width:680px}
+.cv-methods{font-size:13.5px!important;letter-spacing:.02em;color:var(--faint)!important;margin-bottom:6px}
+.cv-ins{border-left:3px solid var(--teal);padding:6px 0 6px 18px;margin-top:18px;max-width:780px}
+.cv-killed{margin-top:24px;background:var(--card);border:1px solid var(--border-soft);border-radius:12px;padding:20px 22px;max-width:780px}
+.cv-killed span{display:block;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--amber);font-weight:700;margin-bottom:8px}
+.cv-killed p{margin:0}
+.cv-feat{display:grid;grid-template-columns:1.1fr .9fr;gap:clamp(20px,3vw,44px);align-items:center;margin-top:clamp(28px,4vh,44px)}
+.cv-feat.rev .cv-figsm{order:2}
+.cv-figsm{aspect-ratio:4/3;border-radius:12px;display:flex;align-items:center;justify-content:center;color:#F1EDE8;font-weight:800;font-size:clamp(28px,3.4vw,44px)}
+.cv-feat p{font-size:16px;line-height:1.65;color:var(--sub)}
+.cv-impact{font-size:clamp(24px,3.4vw,44px)!important;font-weight:800;letter-spacing:-.02em;color:var(--teal)!important;line-height:1.3!important;max-width:860px}
+.cv-how{margin-top:18px;font-size:13.5px!important;color:var(--faint)!important}
+.cv-refl{display:grid;grid-template-columns:1fr 1fr;gap:clamp(20px,3vw,44px)}
+.cv-refl h3{font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--faint);margin-bottom:10px}
+.cv-next{display:flex;justify-content:space-between;align-items:center;gap:16px;margin-top:clamp(72px,10vh,110px);border-top:1px solid var(--border-soft);padding-top:26px;text-decoration:none;color:inherit}
+.cv-next span{font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--faint)}
+.cv-next b{font-size:clamp(20px,2.6vw,30px);letter-spacing:-.02em;color:var(--teal)}
+.cv-next:hover b{text-decoration:underline}
+@media (max-width:860px){.cv-meta{grid-template-columns:1fr 1fr}.cv-feat{grid-template-columns:1fr}.cv-feat.rev .cv-figsm{order:0}.cv-refl{grid-template-columns:1fr}.cv-chips{display:none}}
+
+/* ═══════════════════════════════════════════════════════════════════════
+   다국어 타이포그래피 동기화 레이어 (Multiscript Sync Layer)
+   ─ 기준: 영어(EN)는 손대지 않음. KO/JA만 영어와 "보이는 크기·읽는 리듬"이
+     같아지도록 보정한다. setLang()이 <html lang>을 바꾸면 :lang()이 자동 적용.
+
+   [원리 — 리서치 근거]
+   · CJK(한글/일본어) 글립은 정사각형 엠박스의 ~85–90%를 채움(ICF)하는 반면
+     라틴은 캡하이트 기준 ~70%(x-하이트 ~50–60%)만 채움
+     → 같은 px이면 CJK가 시각적으로 약 1.15–1.25배 더 크고 빽빽해 보인다.
+   · 폰트 내부 수직 메트릭(OS/2·hhea)도 언어별로 달라 언어 전환 시 라인박스가 튄다
+     → 이 사이트는 메트릭 통합 서체(Wanted Sans = 한글+라틴, Pretendard JP = JA)를
+       쓰고, 그 위에 이 CSS 토큰으로 미세 보정하는 2단 구조다.
+
+   [수학 — 실제 적용 계수]
+   · 순수 광학 보정비: 라틴 캡하이트/ CJK ICF = 70/88 ≈ 0.795
+     → 그대로 쓰면 CJK가 너무 작아져 가독성 하한(본문 15–16px)을 깬다.
+     → 그래서 완화 계수를 쓴다:
+         디스플레이(대형 제목)  KO ×0.90, JA ×0.88
+         본문·캡션              KO/JA ×0.94–0.97  (예: 18px→17px, 16px→15.5px)
+   · 행간: 권장 가이드 KO 본문 1.5–1.6 / JA 1.6–1.7이나, 이 사이트는 굵은 글립과
+     강한 틸 강조로 무게감이 커서 한 단계 위로 올림:
+         KO  디스플레이 1.30 / 본문 1.80–1.86 / 기저 1.66
+         JA  디스플레이 1.36 / 본문 1.86–1.92 / 기저 1.72
+   · 자간: EN 디스플레이 -0.04em이 기준. 전각 글립은 과하게 좁히면 답답해져서
+         KO -0.02em, JA -0.01em까지만. 본문은 KO -0.01em, JA 0.
+   ═══════════════════════════════════════════════════════════════════════ */
+/* KO 기저: 행간 1.66 · 자간 -.012em · 한영 경계 자동 여백(autospace) */
+html:lang(ko) body{line-height:1.66;letter-spacing:-.012em;text-autospace:normal}
+/* JA 기저: 행간 1.72 · Pretendard JP 우선 · 전각 부호 여백 정리(spacing-trim) */
+html:lang(ja) body{line-height:1.72;font-family:'Pretendard JP','Wanted Sans Variable','Wanted Sans','Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;letter-spacing:0;text-autospace:normal;text-spacing-trim:space-first}
+/* 히어로 KO: 크기 ×0.90 · 행간 1.30 → 1.42 · 자간 -.02em → -.01em · 어절 유지(keep-all)
+   한글은 전각 em 박스를 가득 채우는 문자라 라틴과 같은 비율이면 상대적으로 빽빽해 보임 →
+   행간은 JA(1.36)보다 살짝 넓게, 자간은 완화. KO 헤드라인 권장 행간 1.35–1.45 참고 */
+html:lang(ko) .hero h1{font-size:clamp(43px,5.4vw,94px);line-height:1.42;letter-spacing:-.01em;word-break:keep-all;max-width:10.5em}
+/* 히어로 JA: 크기 ×0.88 · 행간 1.36 · 자간 -.01em */
+html:lang(ja) .hero h1{font-size:clamp(42px,5.3vw,92px);line-height:1.36;letter-spacing:-.01em}
+/* 리드 KO: 크기 ×0.95 · 행간 1.80 */
+html:lang(ko) .hero .lede{font-size:clamp(17px,1.42vw,21px);line-height:1.8;letter-spacing:-.01em;word-break:keep-all}
+html:lang(ko) .hero-more{word-break:keep-all;line-height:1.75;letter-spacing:-.01em}
+html:lang(ko) .hero-more p{margin-bottom:6px}
+html:lang(ko) .hero-more p:last-child{margin-bottom:0}
+html:lang(ja) .hero-more{line-break:strict;overflow-wrap:normal;max-width:48em}
+html:lang(ja) .ct-more{max-width:48em}
+html:lang(ko) .ct-more{word-break:keep-all;line-height:1.75;letter-spacing:-.01em}
+/* 리드 JA: 크기 ×0.95 · 행간 1.86 */
+html:lang(ja) .hero .lede{font-size:clamp(17px,1.42vw,21px);line-height:1.86}
+/* 소개 문단 KO: 18px → 17px · 행간 1.82 */
+html:lang(ko) .ag-p{font-size:17px;line-height:1.82;letter-spacing:-.01em;word-break:keep-all}
+/* 소개 문단 JA: 18px → 17px · 행간 1.90 */
+html:lang(ja) .ag-p{font-size:17px;line-height:1.9}
+/* 워크 행 설명 KO: 17px → 16px · 행간 1.76 */
+html:lang(ko) .r-body p{font-size:16px;line-height:1.76;letter-spacing:-.01em;word-break:keep-all}
+html:lang(ko) .pc-meta{font-size:12px;letter-spacing:-.01em;word-break:keep-all}
+html:lang(ja) .pc-meta{font-size:12px;letter-spacing:.01em}
+/* 워크 행 설명 JA: 17px → 16px · 행간 1.84 */
+html:lang(ja) .r-body p{font-size:16px;line-height:1.84}
+/* 케이스 제목 KO: ×0.92 · 행간 1.28 */
+html:lang(ko) .cv-title{font-size:clamp(31px,4.2vw,58px);line-height:1.28;letter-spacing:-.02em;word-break:keep-all}
+/* 케이스 제목 JA: ×0.88 · 행간 1.34 */
+html:lang(ja) .cv-title{font-size:clamp(30px,4.1vw,56px);line-height:1.34;letter-spacing:-.01em}
+/* 케이스 요약 KO: ×0.95 · 행간 1.76 */
+html:lang(ko) .cv-sub{font-size:clamp(15px,1.5vw,20px);line-height:1.76;letter-spacing:-.01em;word-break:keep-all}
+/* 케이스 요약 JA: ×0.95 · 행간 1.84 */
+html:lang(ja) .cv-sub{font-size:clamp(15px,1.5vw,20px);line-height:1.84}
+/* 케이스 본문 KO: 16px → 15.5px · 행간 1.86 */
+html:lang(ko) .cv-blk p{font-size:15.5px;line-height:1.86;letter-spacing:-.01em;word-break:keep-all}
+/* 케이스 본문 JA: 16px → 15.5px · 행간 1.92 */
+html:lang(ja) .cv-blk p{font-size:15.5px;line-height:1.92}
+/* 문제 제기 대형문 KO: ×0.95 · 행간 1.74 */
+html:lang(ko) .cv-big{font-size:clamp(18px,1.9vw,23px)!important;line-height:1.74!important;letter-spacing:-.01em}
+/* 문제 제기 대형문 JA: ×0.95 · 행간 1.82 */
+html:lang(ja) .cv-big{font-size:clamp(18px,1.9vw,23px)!important;line-height:1.82!important}
+/* 임팩트 수치문 KO: ×0.94 · 행간 1.54 */
+html:lang(ko) .cv-impact{font-size:clamp(22px,3.2vw,41px)!important;line-height:1.54!important;letter-spacing:-.01em;word-break:keep-all}
+/* 임팩트 수치문 JA: ×0.94 · 행간 1.62 */
+html:lang(ja) .cv-impact{font-size:clamp(22px,3.2vw,41px)!important;line-height:1.62!important}
+/* 폐기 카드·피처 설명 KO: 15.5px · 행간 1.80 */
+html:lang(ko) .cv-killed p,html:lang(ko) .cv-feat p{font-size:15.5px;line-height:1.8;letter-spacing:-.01em}
+/* 폐기 카드·피처 설명 JA: 15.5px · 행간 1.88 */
+html:lang(ja) .cv-killed p,html:lang(ja) .cv-feat p{font-size:15.5px;line-height:1.88}
+/* 연락처 헤드라인 KO: 24px → 23px · 행간 1.55 */
+html:lang(ko) #contact h2{font-size:23px!important;line-height:1.55;letter-spacing:-.02em;word-break:keep-all;font-weight:800}
+/* 연락처 헤드라인 JA: 24px → 23px · 행간 1.62 */
+html:lang(ja) #contact h2{font-size:23px!important;line-height:1.62;letter-spacing:-.01em;font-weight:800}
+/* 키커 KO/JA 보정: uppercase가 통하지 않는 CJK는 em을 꽉 채운 글자라 EN 캡스(≈0.72em)보다 약 25% 커 보여
+   키커↔헤드라인 대비가 약해짐 → 13→12px로 광학 크기를 맞춰 대비를 회복하고, 스크립트별 자간으로 라벨감 부여
+   (KO .08em — 한글 블록은 넓어 그 이상은 산만해짐 / JA .18em — 일본 에디토리얼 라벨의 관용적 넓은 자간) */
+html:lang(ko) .kicker{font-size:12px;letter-spacing:.08em}
+html:lang(ja) .kicker{font-size:12px;letter-spacing:.18em}
+.sb-meta{color:var(--faint);font-variant-numeric:tabular-nums}
+.sb-metagroup{margin-top:6px}
+.sb-meta + .sb-meta{margin-top:6px}
+/* 영어 고정 chrome 보호: PC 좌측 패널과 compact header는 어떤 lang에서도
+   EN 상태와 동일한 타이포그래피·행간·자간을 사용한다. 본문만 locale 규칙을 따른다. */
+html:lang(en) .sb, html:lang(ko) .sb, html:lang(ja) .sb,
+html:lang(en) #scrollTopbar, html:lang(ko) #scrollTopbar, html:lang(ja) #scrollTopbar,
+html:lang(en) .case-lang, html:lang(ko) .case-lang, html:lang(ja) .case-lang {
+  font-family:'Wanted Sans Variable','Wanted Sans','Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif !important;
+  line-height:1.6 !important;
+  letter-spacing:normal !important;
+  text-autospace:none !important;
+}
+
+    /* The hover preview is a fine-pointer affordance, never on touch input. */
+    @media (max-width: 1079px) and (hover: none), (max-width: 1079px) and (pointer: coarse) {
+      .idx-prev { display: none !important; }
+      .cv-back:active { transform: scale(.97); }
+    }
+    /* ── Adaptive contextual preview — example only ─────────────────────────
+       Right Design reminder: visual context may adapt to the reading field, but
+       it must never claim space from the title, copy, metadata, or CTA. */
+    .adaptive-prev { display: none; }
+
+    /* Work-only image-fragment scatter layer. The canvas draws small rectangles
+       sampled from the active project art; this is deliberately not generic dust.
+       It only exists on compact preview exits, never in the desktop hover system. */
+    .adaptive-fragment-canvas {
+      position: fixed;
+      z-index: 35;
+      pointer-events: none;
+      display: none;
+      overflow: hidden;
+      border-radius: 16px;
+      will-change: transform, opacity;
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .adaptive-fragment-canvas { display: none !important; will-change: auto; }
+    }
+    @media (min-width: 360px) and (max-width: 1079px) {
+      .adaptive-prev {
+        display: block; position: fixed; z-index: 34; left: 0; top: 0;
+        width: clamp(280px, 48vw, 420px); aspect-ratio: 4 / 3; overflow: hidden;
+        pointer-events: none; opacity: 0; transform-origin: top right;
+        border-radius: 16px; background: var(--border-soft);
+        box-shadow: 0 26px 68px rgba(12,48,36,.22); will-change: transform, opacity;
+      }
+      .adaptive-prev .pv { transition: opacity .2s ease; }
+      /* Fragment scatter supersedes the earlier blue-noise filter: the visual
+         breakup now comes from real image-content rectangles drawn on one canvas. */
+      .adaptive-prev[data-state="exit"] .pv.on { filter: none; }
+      .adaptive-prev .pv span { font-size: clamp(18px, 2.3vw, 25px); }
+      .adaptive-prev[data-state="retreat"], .adaptive-prev[data-state="dock"] { box-shadow: 0 18px 44px rgba(12,48,36,.18); }
+      .adaptive-prev[data-state="exit"] { box-shadow: 0 12px 28px rgba(12,48,36,.14); }
+      /* The active project is defined by its title treatment, not by fading the rest of the reading field. */
+      .idx-row.adaptive-active .r-body h3 { color: var(--teal); }
+    }
+    @media (min-width: 360px) and (max-width: 599px) {
+      /* Approved mobile-only +12% preview scale: preserve the 4:3 ratio and
+         existing right-anchored placement. Tablet (600–1079px) and desktop
+         remain on their established dimensions and branches. */
+      .adaptive-prev { width: min(80.64vw, 367px); border-radius: 14px; }
+      .adaptive-prev .pv span { font-size: clamp(16px, 5vw, 21px); }
+    }
+    @media (max-width: 359px), (min-width: 1080px) {
+      .adaptive-prev { display: none !important; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .idx-row, .case-view { transition: none !important; transform: none !important; }
+      .adaptive-prev[data-state="exit"] .pv.on { filter: none !important; }
+    }
+
+    /* ================== Scroll-return topbar (compact screens only) ==================
+       Absent while reading downward; returns when the reader signals upward intent.
+       Desktop never shows it: the sidebar already navigates. */
+    .scroll-topbar {
+      position: fixed; inset: 0 0 auto; z-index: 90;
+      transform: translate3d(0, -112%, 0); opacity: 0; pointer-events: none;
+      transition: transform 340ms cubic-bezier(.22,1,.36,1), opacity 150ms ease;
+      will-change: transform, opacity;
+    }
+    .scroll-topbar.is-visible { transform: translate3d(0, 0, 0); opacity: 1; pointer-events: auto; }
+    .scroll-topbar__surface {
+      /* Quiet Editorial Utility: mobile return navigation is a stable paper surface,
+         not a translucent app overlay. Blur belongs only to the language pill. */
+      padding: max(12px, env(safe-area-inset-top)) 24px 10px;
+      background: var(--bg);
+      border-bottom: 1px solid var(--border-soft);
+    }
+    .scroll-topbar__topline { display: flex; align-items: center; justify-content: space-between; min-height: 40px; }
+    .scroll-topbar__brand { font-size: 15px; font-weight: 800; letter-spacing: .15em; color: var(--teal); text-decoration: none; }
+    .scroll-topbar__lang {
+      position: relative; display: flex; align-items: center; padding: 4px; border-radius: 999px;
+      background: rgba(241,237,232,.28); border: 1px solid rgba(26,26,26,.10);
+      box-shadow: 0 4px 20px rgba(3,16,12,.06);
+      backdrop-filter: blur(20px) saturate(180%);
+      -webkit-backdrop-filter: blur(20px) saturate(180%);
+    }
+    .scroll-topbar__lang button {
+      position: relative; z-index: 2; isolation: isolate; min-width: 44px; height: 44px; border: 0; padding: 0 12px;
+      border-radius: 999px; background: transparent; color: var(--faint);
+      font: inherit; font-size: 12px; font-weight: 700; cursor: pointer;
+      transition: color 150ms ease, transform 150ms ease;
+    }
+    .scroll-topbar__lang button.on { color: #fff; }
+    .scroll-topbar__lang .indicator {
+      position: absolute; top: 0; left: 0; z-index: 1;
+      width: 44px; height: 44px;
+      background: var(--teal); border-radius: 50%;
+      transition: transform 220ms cubic-bezier(0.22, 1, 0.36, 1);
+      pointer-events: none;
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .scroll-topbar__lang .indicator { transition: none !important; }
+    }
+    .scroll-topbar__lang button:active { transform: scale(.94); }
+    .scroll-topbar__nav { display: grid; grid-template-columns: repeat(3, 1fr); margin-top: 3px; }
+    .scroll-topbar__nav a {
+      position: relative; min-height: 40px; display: flex; align-items: center; justify-content: flex-start;
+      font-size: 15px; font-weight: 600; color: var(--ink); text-decoration: none;
+    }
+    .scroll-topbar__nav a:nth-child(2) { justify-content: center; }
+    .scroll-topbar__nav a:nth-child(3) { justify-content: flex-end; }
+    .scroll-topbar__nav a[aria-current="location"] { color: var(--teal); }
+    @media (min-width: 600px) and (max-width: 1079px) {
+      .scroll-topbar__surface { padding-inline: clamp(32px, 6vw, 64px); }
+      .scroll-topbar__nav { grid-template-columns: auto auto auto; justify-content: start; gap: clamp(28px, 4vw, 52px); }
+      .scroll-topbar__nav a, .scroll-topbar__nav a:nth-child(2), .scroll-topbar__nav a:nth-child(3) { justify-content: flex-start; }
+    }
+    @media (min-width: 1080px) { .scroll-topbar { display: none; } }
+    @media (prefers-reduced-motion: reduce) { .scroll-topbar { transition: none; } }
+
+    /* ================== Precision compact-screen refinements ==================
+       These rules deliberately stop below 1080px. The existing desktop rail,
+       hover preview, typography, and spacing remain unchanged. */
+    @media (max-width: 1079px) {
+      /* Quiet Editorial Index: preserve the compact two-row header while giving
+         its divider a phi-derived, bounded vertical breathing room. */
+      .sb { min-height: clamp(128px, 16.18svh, 144px); }
+      :root { --rule-quiet: color-mix(in srgb, var(--ink) 10%, transparent); }
+      .sb, .idx-list, .idx-row, .ag-collab { border-color: var(--rule-quiet); }
+      .hero h1 { text-wrap: balance; }
+      .hero .lede { text-wrap: pretty; line-height: 1.66; }
+      section { scroll-margin-top: 136px; }
+      /* Compact language controls share the same header rail; no viewport-specific nudge. */
+
+      /* Tablet keeps the desktop language component; only its hit area grows. */
+      .sb-lang button {
+        position: relative; z-index: 2; isolation: isolate; width: auto; height: 44px;
+        min-width: 44px; min-height: 44px; padding: 0 12px;
+        background: transparent !important;
+        color: var(--faint);
+        transition: color 150ms ease, transform 150ms ease;
+      }
+      .sb-lang button.on { color: #fff; }
+      .sb-lang button.on::before { content: none; }
+      .sb-lang button:active { transform: scale(.94); }
+    }
+    @media (max-width: 1079px) and (hover: hover) and (pointer: fine) {
+      .sb-lang button:not(.on):hover { color: var(--teal); }
+    }
+    @media (max-width: 599px) {
+      .sb-lang { right: 24px; top: 11px; }
+    }
+
+    /* Keep the compact site header English-led when the content language changes.
+       The multilingual typography layer remains scoped to the page body; PC is
+       untouched because this guard ends at 1079px. */
+    @media (max-width: 1079px) {
+      .sb, .sb *, #scrollTopbar, #scrollTopbar * {
+        font-family: 'Wanted Sans Variable', Inter, ui-sans-serif, system-ui, sans-serif !important;
+      }
+    }
+
+    /* Touch geometry is 44px. Desktop is a quieter utility control — see 1080px override. */
+    .sb-lang button, .scroll-topbar__lang button {
+      display: inline-flex; align-items: center; justify-content: center;
+      width: 44px; height: 44px; min-width: 44px; min-height: 44px;
+      flex: 0 0 44px; padding: 0; margin: 0; aspect-ratio: 1 / 1; border-radius: 50%;
+      line-height: 1; letter-spacing: 0; text-align: center;
+    }
+    .sb-lang .indicator, .scroll-topbar__lang .indicator { border-radius: 50%; }
+
+    /* Restore the static compact-header language control after the desktop
+       fixed-pill declaration. At scroll depth, only scroll-topbar__lang appears. */
+    @media (min-width: 600px) and (max-width: 1079px) {
+      .sb-lang {
+        position: absolute; top: 10px; right: clamp(32px, 6vw, 64px);
+        padding: 4px; border: 1px solid rgba(26,26,26,.10); border-radius: 99px;
+        background: rgba(241,237,232,.28); box-shadow: 0 4px 20px rgba(3,16,12,.06);
+        backdrop-filter: blur(20px) saturate(180%);
+        -webkit-backdrop-filter: blur(20px) saturate(180%);
+      }
+    }
+    @media (max-width: 599px) {
+      .sb-lang { position: absolute; top: 11px; right: 24px; }
+    }
+
+    /* The in-flow selector is only the compact-header instance; desktop keeps
+       the original body-level selector and sidebar brand composition. */
+    @media (min-width: 1080px) {
+      .sb-lang--compact { display: none; }
+
+      /* Desktop language control.
+         44 / φ = 27 → too small. 44 / √φ ≈ 34.6 → 36px (4px grid).
+         Type stays 12px so the labels don't shrink with the target. */
+      .sb-lang {
+        padding: 4px;
+      }
+      .sb-lang button {
+        width: 36px;
+        height: 36px;
+        min-width: 36px;
+        min-height: 36px;
+        flex: 0 0 36px;
+        font-size: 12px;
+      }
+      .sb-lang .indicator {
+        width: 36px;
+        height: 36px;
+      }
+
+      /* Persistent corner chrome — same place on the home and in a case. */
+      #siteLang {
+        top: 20px;
+        right: 20px;
+        z-index: 1100;
+      }
+      .case-lang { display: none !important; }
+    }
+
+    /* ================== Shared compact header alignment ==================
+       The brand and the visible compact language selector are now true siblings
+       in one row. This makes the inline gutter and cross-axis center structural,
+       rather than dependent on fixed top/right offsets. The body-level selector
+       remains available for desktop and case-view stacking, but is hidden while
+       the compact in-flow selector is visible. */
+    @media (max-width: 1079px) {
+      #siteLang { display: none; }
+
+      .sb {
+        display: block;
+      }
+
+      .sb-topline {
+        min-height: 52px;
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) auto;
+        align-items: center;
+        column-gap: 16px;
+      }
+
+      .sb-topline .sb-brand {
+        min-width: 0;
+        line-height: 1;
+      }
+
+      .sb-topline .sb-lang--compact {
+        position: static;
+        inset: auto;
+        transform: none;
+        justify-self: end;
+        margin: 0;
+      }
+
+      .sb-nav {
+        padding-right: 0;
+      }
+    }
+
+    @media (min-width: 600px) and (max-width: 1079px) {
+      #siteLang {
+        display: flex;
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        z-index: 1100;
+      }
+      .sb-lang--compact,
+      .scroll-topbar__lang,
+      .case-lang { display: none !important; }
+    }
+
+    /* ================== Input-aware compact motion ==================
+       Touch confirms a choice; it never copies desktop hover exploration. */
+    @media (max-width: 1079px) and (hover: none), (max-width: 1079px) and (pointer: coarse) {
+      /* Quiet Editorial Index: tapping a Work row confirms input once, through
+         a paper-thin ink wash. It is not a lasting selection or a card press. */
+      .idx-row {
+        -webkit-tap-highlight-color: transparent;
+        transition: none;
+      }
+      .idx-row:active { background: transparent; }
+      .idx-row .pc-title, .idx-row .view-link { transition: transform 80ms cubic-bezier(.22,1,.36,1), opacity 80ms cubic-bezier(.22,1,.36,1); }
+      .idx-row:active .pc-title, .idx-row.is-opening .pc-title { transform: translateX(2px); }
+      .idx-row:active .view-link, .idx-row.is-opening .view-link { transform: translateX(2px); opacity: .78; }
+
+      .case-view {
+        /* Desktop axis retained: opening rises from 14px; removing .open runs the same path upward. */
+        transform: translateY(14px);
+        transition: opacity 190ms ease, transform 300ms cubic-bezier(.22,1,.36,1);
+      }
+      .case-view.open { opacity: 1; transform: none; }
+      .cv-wrap {
+        /* The desktop case content has no second entrance. Keep mobile identical. */
+        opacity: 1; transform: none; transition: none;
+      }
+      .case-view.open .cv-wrap { opacity: 1; transform: none; }
+      .cv-back:active { transform: scale(.97); }
+      .cv-next:active { opacity: .72; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .idx-row, .idx-row .pc-title, .idx-row .view-link, .case-view, .cv-wrap, .cv-back, .cv-next {
+        transition: none !important; transform: none !important;
+      }
+    }
+    /* Multilingual editorial refinement: language is a layout input. */
+    html:lang(en) { font-family: 'Wanted Sans Variable', Inter, ui-sans-serif, system-ui, sans-serif; }
+    html:lang(ko) { font-family: 'Wanted Sans Variable', Pretendard, 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif; }
+    html:lang(ja) { font-family: 'Pretendard JP', 'Hiragino Kaku Gothic ProN', 'Yu Gothic', YuGothic, Meiryo, sans-serif; }
+    .hero h1 { text-wrap: balance; }
+    .hero .lede { text-wrap: pretty; }
+    html:lang(en) .hero h1 { max-inline-size: 20ch; hyphens: manual; }
+    html:lang(ko) .hero h1 { max-inline-size: 10.6em; line-height: 1.26; letter-spacing: -.055em; word-break: keep-all; line-break: strict; }
+    html:lang(ja) .hero h1 { max-inline-size: 12em; line-height: 1.25; letter-spacing: -.045em; word-break: normal; line-break: strict; }
+    /* User-authored Hero title groups remain separate across languages. Each group
+       is block-level so the requested rhythm survives; narrow screens may wrap
+       inside a group rather than mixing adjacent meaning units. */
+    .hero-copy-line { display: block; }
+    html:lang(ja) .hero-line { white-space: nowrap; }
+    /* Desktop preserves its established Japanese cadence. Compact screens use the
+       approved D grouping so 人に合うデザイン remains a single visible unit. */
+    html:lang(ja) .hero-ja-compact { display: none; }
+    @media (max-width: 1079px) {
+      html:lang(ja) .hero-ja-desktop { display: none; }
+      html:lang(ja) .hero-ja-compact { display: inline; }
+      html:lang(ja) .hero-ja-compact .hero-line { display: block; white-space: nowrap; }
+    }
+    /* Tablet-only English headline measure: preserve its established type metrics,
+       but stop the 900–1079px title from becoming a wide two-line slab while KR/JP stay three lines. */
+    @media (min-width: 900px) and (max-width: 1079px) {
+      html:lang(en) .hero h1 { max-inline-size: 620px; }
+    }
+    html:lang(en) .hero .lede { max-inline-size: 36ch; hyphens: manual; }
+    html:lang(ko) .hero .lede { max-inline-size: 24em; line-height: 1.78; letter-spacing: -.015em; word-break: keep-all; line-break: strict; }
+    html:lang(ja) .hero .lede { max-inline-size: 26em; line-height: 1.8; letter-spacing: .005em; word-break: normal; line-break: strict; }
+    html:lang(ko) .pc-desc, html:lang(ko) .cv-text, html:lang(ko) .cv-sub { word-break: keep-all; line-break: strict; line-height: 1.72; }
+    html:lang(ja) .pc-desc, html:lang(ja) .cv-text, html:lang(ja) .cv-sub { word-break: normal; line-break: strict; line-height: 1.78; }
+    #contact .ct-h2 { max-inline-size: none; text-wrap: initial; }
+    .ct-line { display: block; white-space: nowrap; }
+    html:lang(ko) .ct-h2 { line-height: 1.55; word-break: keep-all; }
+    html:lang(ja) .ct-h2 { line-height: 1.62; line-break: strict; }
+    .contact-link { overflow-wrap: anywhere; }
+
+    /* Work row is the action; the visible CTA is off. */
+    .idx-row { cursor: pointer; }
+    .view-link { display: none; }
+    .view-link:focus-visible { outline: 2px solid var(--teal); outline-offset: 5px; border-radius: 2px; }
+    .sb-lang button:not(.on), .scroll-topbar__lang button:not(.on) { color: #4b4840; }
+    .r-num { opacity: .55; }
+
+    /* A case study is one modal state, not a second copy of site navigation. */
+    body.case-open .sb, body.case-open #scrollTopbar { visibility: hidden; pointer-events: none; }
+    /* Compact case header still owns a local pill; desktop keeps #siteLang. */
+    .cv-top .case-lang {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      right: 20px;
+      height: max-content;
+      margin-top: auto;
+      margin-bottom: auto;
+      z-index: 2;
+    }
+    .case-lang { visibility: hidden; pointer-events: none; }
+    body.case-open .case-lang { visibility: visible; pointer-events: auto; }
+    .case-view { z-index: 1000; }
+    .case-view[aria-hidden="true"] { pointer-events: none; }
+    .cv-title:focus { outline: none; }
+    /* Scroll isolation is intentionally compact-only. Desktop keeps the original
+       case container, document lock, and all motion behavior unchanged. */
+    @media (max-width: 1079px) {
+      .case-view { overscroll-behavior-y: contain; touch-action: pan-y; -webkit-overflow-scrolling: touch; }
+      html.case-open, body.case-open { overscroll-behavior-y: none; }
+    }
+    @media (max-width: 599px) {
+      /* Mobile multilingual refinement: EN keeps meaningful word groups on 320px;
+         JA keeps its authored three lines inside the 24px reading gutter. No >=600px rule is affected. */
+      html:lang(en) .hero h1 { font-size: clamp(36px, 10.4vw, 42px); line-height: 1.05; }
+      html:lang(ko) .hero h1 { font-size: clamp(34px, 9.8vw, 44px); line-height: 1.26; max-inline-size: 10.6em; }
+      html:lang(ja) .hero h1 { font-size: clamp(32px, calc(8.6vw + 2px), 38px); line-height: 1.34; max-inline-size: none; }
+      html:lang(ja) .hero-line { display: block; white-space: nowrap; }
+      .hero-copy-line { display: block; }
+      html:lang(ko) .hero h1 br { display: none; }
+      .contact-link { font-size: clamp(23px, 8.8vw, 36px); }
+    }
+    @media (max-width: 359px) {
+      /* Preserve the authored title rhythm at the narrowest safe width while
+         allowing an individual group to wrap instead of overflowing. */
+      .hero-copy-line { white-space: normal; }
+      html:lang(ja) .hero h1 { font-size: clamp(25px, 8.3vw, 28px); max-inline-size: 10.4em; }
+      html:lang(ja) .hero-line { white-space: normal; }
+      html:lang(ja) .hero-ja-compact .hero-line { white-space: nowrap; }
+      .ct-line { white-space: normal; }
+    }
+    /* Contact lock: preserve the authored two-line message. Scale each script to
+       the available mobile measure instead of creating a third line or clipping text. */
+    @media (max-width: 599px) {
+      #contact .ct-line { white-space: nowrap; }
+      html:lang(en) #contact .ct-h2 { font-size: clamp(17.5px, 5.55vw, 24px) !important; line-height: 1.38; letter-spacing: -.035em; }
+      html:lang(ko) #contact .ct-h2 { font-size: clamp(16px, 5.1vw, 21px) !important; line-height: 1.55; letter-spacing: -.03em; }
+      html:lang(ja) #contact .ct-h2 { font-size: clamp(15px, 4.7vw, 20px) !important; line-height: 1.62; letter-spacing: -.02em; }
+    }
+
