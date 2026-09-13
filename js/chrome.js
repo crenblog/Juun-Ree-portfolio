@@ -473,47 +473,21 @@
     });
 
     (function(){
-      var desktopMQ=window.matchMedia('(hover: hover) and (min-width: 1080px)');
       function bindNote(lead, trigger){
         if(!lead||!trigger)return;
-        var hotTimer=null;
-        function desktop(){return desktopMQ.matches;}
         function setOpen(open){
           lead.classList.toggle('is-open', open);
           trigger.setAttribute('aria-expanded', open?'true':'false');
         }
-        function setHot(on){
-          if(hotTimer){clearTimeout(hotTimer);hotTimer=null;}
-          if(on) lead.classList.add('is-hot');
-          else hotTimer=setTimeout(function(){lead.classList.remove('is-hot');},220);
-        }
-        lead.addEventListener('pointerenter',function(){if(desktop())setHot(true);});
-        lead.addEventListener('pointerleave',function(){if(desktop())setHot(false);});
-        function syncRole(){
-          if(desktop()){
-            trigger.removeAttribute('role');
-            trigger.removeAttribute('tabindex');
-            setOpen(false);
-            lead.classList.remove('is-hot');
-          }else{
-            trigger.setAttribute('role','button');
-            trigger.setAttribute('tabindex','0');
-          }
-        }
-        trigger.addEventListener('click',function(e){
-          if(desktop())return;
-          e.preventDefault();
-          setOpen(!lead.classList.contains('is-open'));
-        });
+        trigger.setAttribute('role','button');
+        trigger.setAttribute('tabindex','0');
+        trigger.setAttribute('aria-expanded','false');
+        trigger.addEventListener('click',function(){setOpen(!lead.classList.contains('is-open'));});
         trigger.addEventListener('keydown',function(e){
-          if(desktop())return;
           if(e.key!=='Enter'&&e.key!==' ')return;
           e.preventDefault();
           setOpen(!lead.classList.contains('is-open'));
         });
-        syncRole();
-        if(desktopMQ.addEventListener)desktopMQ.addEventListener('change',syncRole);
-        else desktopMQ.addListener(syncRole);
       }
       bindNote(document.querySelector('.hero-lead'), document.querySelector('.hero-lead .lede'));
       bindNote(document.querySelector('.ct-lead'), document.querySelector('.ct-lead .ct-h2'));

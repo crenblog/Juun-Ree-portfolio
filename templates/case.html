@@ -9,11 +9,15 @@
   추가하는 법
   1. 이 파일을 복제하지 말고, 아래 A→D를 복사해 각 자리에 붙인다.
   2. 모든 __TOKEN__ 을 치환한다.
-  3. 이전 케이스의 data-next 를 cv-__slug__ 로 바꾼다.
-  4. 사이드바 Work 숫자 .n 을 올린다.
-  5. 커버는 assets/images/ 에 넣고 __cover__ 는 pv-a | pv-b | pv-c
+  3. 같은 본문으로 `__slug__.html` 페이지를 만든다 (biennale.html 을 복사해 본문만 교체).
+     마스크·case-view 껍데기는 그대로 둔다. 본문만 바꾼다.
+     스크러버는 js/scrubber.js 가 모든 페이지에 붙인다. 마크업을 복사하지 않는다.
+     제목은 각 .cv-blk h2. 짧게 쓰려면 그 h2에 data-sk1="짧은 제목".
+  4. 이전 케이스의 data-next 와 href 를 cv-__slug__ / __slug__.html 로 바꾼다.
+  5. 사이드바 Work 숫자 .n 을 올린다. All work JSON 의 url 은 __slug__.html.
+  6. 커버는 assets/images/ 에 넣고 __cover__ 는 pv-a | pv-b | pv-c
      (새 색이 필요하면 css/site.css 에 .pv-d 한 줄 추가)
-  6. 폰 화면·영상이면 templates/media.html 에서 해당 조각을 가져와
+  7. 폰 화면·영상이면 templates/media.html 에서 해당 조각을 가져와
      히어로(.cv-fig) 또는 최종 디자인 칸(.cv-figsm) 대신 붙인다
 
   토큰
