@@ -12,7 +12,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
   <link rel="stylesheet" href="css/site.css"/>
 </head>
-<body class="page-work gallery-only">
+<body class="page-work">
   <div class="sb-lang" id="siteLang" role="group" aria-label="Language Selector">
     <div class="indicator" aria-hidden="true"></div>
     <button class="on" data-lang="en">EN</button>
@@ -30,23 +30,10 @@
     <svg class="cv-back__icon" viewBox="0 0 18 18" aria-hidden="true" focusable="false"><path d="M11.25 4.5 6.75 9l4.5 4.5" fill="none" stroke="currentColor" stroke-width="1.35" stroke-linecap="round" stroke-linejoin="round"/></svg>
   </a>
   <h1 class="cf-title">All work</h1>
-  <div id="viewport">
-    <main id="composition" aria-label="All work">
-      <img id="backdrop" alt="" draggable="false"/>
-      <section id="stage" aria-label="Interactive work gallery" aria-describedby="instructions" tabindex="0">
-        <p id="instructions" class="sr-only">Drag or scroll to pan. Arrow keys move one project to the center. Enter opens it. Escape closes it.</p>
-        <div id="field"></div>
-        <div id="spotlight" aria-hidden="true"></div>
-        <div class="vignette" aria-hidden="true"></div>
-        <div id="empty" hidden><strong>No work yet.</strong><span>Projects will appear here.</span></div>
-        <div id="detail-layer" role="dialog" aria-modal="true" aria-labelledby="detail-title" aria-describedby="detail-description" hidden>
-          <button id="scrim" aria-label="Close project details"></button>
-          <div id="detail-sheet"><div id="detail-copy"><h1 id="detail-title"></h1><p id="detail-description"></p><a id="detail-link" hidden>Take a closer look →</a></div></div>
-          <button id="detail-photo" aria-label="Close project details"><img id="detail-image" alt="" draggable="false"/></button>
-        </div>
-      </section>
-    </main>
-  </div>
+
+  <main id="main-content" class="all-work-main" aria-label="All work">
+    <!-- Inner design will be added here -->
+  </main>
 
 <div class="case-view" id="caseView" role="dialog" aria-modal="true" aria-label="Case study details" aria-hidden="true" inert>
 <div class="cv-top"><div class="cv-topin"><button class="cv-back" id="cvBack" type="button" data-i18n-aria="csBack" aria-label="All work"><svg class="cv-back__icon" viewBox="0 0 18 18" aria-hidden="true" focusable="false"><path d="M11.25 4.5 6.75 9l4.5 4.5" fill="none" stroke="currentColor" stroke-width="1.35" stroke-linecap="round" stroke-linejoin="round"/></svg></button><div class="cv-chips" id="cvChips" hidden></div>
@@ -233,6 +220,6 @@
   <script src="js/page.js"></script>
   <script src="js/i18n.js"></script>
   <script src="js/cases.js"></script>
-  <script src="js/gallery.js"></script>
+  <!-- <script src="js/gallery.js"></script> -->
 </body>
 </html>
