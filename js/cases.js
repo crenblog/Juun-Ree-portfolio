@@ -47,7 +47,7 @@ function ensureCaseChrome(){
   if(caseView&&!document.getElementById('cvSk1')){
     var sk=document.createElement('div');
     sk.className='sk1';sk.id='cvSk1';sk.hidden=true;
-    sk.innerHTML='<div class="sk1-card" id="cvSk1Card" aria-hidden="true"><p class="sk1-title" id="cvSk1Title"></p></div><div class="sk1-bar" id="cvSk1Bar" role="slider" aria-label="Read position" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" tabindex="0"><div class="sk1-ticks" id="cvSk1Ticks"></div><div class="sk1-handle" aria-hidden="true"></div></div>';
+    sk.innerHTML='<div class="sk1-card" id="cvSk1Card" aria-hidden="true"><p class="sk1-title" id="cvSk1Title"></p></div><div class="sk1-bar" id="cvSk1Bar" role="slider" aria-label="Read position" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" tabindex="0"><div class="sk1-ticks" id="cvSk1Ticks"></div><div class="sk1-ghost" aria-hidden="true"></div><div class="sk1-handle" aria-hidden="true"></div></div>';
     caseView.appendChild(sk);
   }
   var card=document.getElementById('cvSk1Card');

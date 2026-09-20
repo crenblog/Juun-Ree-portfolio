@@ -15,8 +15,8 @@
 1. **종이와 잉크.** 지면은 크림, 본문은 거의 검정. 중간 회색으로 위계를 만들지 않는다. 위계는 크기·무게·간격이다.
 2. **초록은 신호다.** `--teal`은 지표 숫자, 결정문(`So …`), 선택된 안, 제품 목업의 on 칩에만 쓴다. 제목·본문·인용·SeMA 마크·뒤로·다음 작업에는 쓰지 않는다.
 3. **역할을 늘리지 않는다.** 새 회색, 새 초록, 새 앰버를 만들지 않는다. 필요한 대비는 기존 역할의 값을 옮긴다.
-4. **측정 너비.** 본문은 640px을 넘기지 않는다. 큰 제목만 더 넓게 간다.
-5. **무게는 600이 천장이다.** 본문 400, 인용 500, 디스플레이·섹션·결정 600. 800은 이 페이지에서 쓰지 않는다. (제품 목업 화면 안 칩만 예외.)
+4. **무게는 600이 천장이다.** 본문 400, 인용 500, 디스플레이·섹션·결정 600. 800은 이 페이지에서 쓰지 않는다. (제품 목업 화면 안 칩만 예외.)
+5. **폭은 타입 역할이 아니다.** 크기·무게·행간·자간만 타입 표에 둔다. 페이지 폭은 레이아웃이다.
 
 Carbon이 본문 색을 중성으로 두고 액션에만 색을 쓰는 것과 같다. 색은 장식이 아니다.
 
@@ -70,31 +70,31 @@ Wanted Sans Variable, Wanted Sans, Pretendard JP, Inter, system-ui
 
 ## 타입 역할
 
-크기·무게·행간·자간·색·최대 너비·클래스를 한 줄에 둔다.  
+크기·무게·행간·자간·색·클래스. 폭은 이 표에 넣지 않는다.  
 `clamp`는 최소 / 선호 / 최대. 데스크톱 기준은 최대값.
 
-| 역할 | 크기 | 무게 | 행간 | 자간 | 색 | 너비 | 클래스 |
-|---|---|---|---|---|---|---|---|
-| Mark | clamp(72px, 16vw, **180px**) | 600 | 0.8 | −0.06em | Ink | — | `.cv-mark` |
-| Display | clamp(40px, 7vw, **84px**) | 600 | 0.95 | −0.035em | Ink | — | `.cv-title` |
-| Quote | clamp(32px, 5vw, **52px**) | 500 | 1.2 | −0.03em | Ink | 16em | `.cv-quote` |
-| Ask | clamp(28px, 4vw, **40px**) | 600 | 1.2 | −0.03em | Ink | 18em | `.cv-ask` |
-| Metric | clamp(26px, 3.2vw, **40px**) | 600 | 1.1 | −0.04em | **Teal** | nowrap, tabular | `.cv-stats b` |
-| Ordinal | **72px** | 600 | 0.8 | −0.06em | Ink | — | `.cv-prod-n` |
-| Lede | clamp(18px, 2.1vw, **22px**) | 400 | 1.5 | 0 | Ink | 640px | `.cv-sub` |
-| Decision | clamp(18px, 2vw, **22px**) | 600 | 1.35 | −0.02em | **Teal** | — | `.cv-then` |
-| Product title | **22px** | 600 | — | −0.02em | Ink | — | `.cv-prod-copy h3` |
-| Option title | **18px** | 600 | — | −0.02em | Ink | — | `.cv-opt h3` |
-| Body | **17px** | 400 | 1.65 | 0 | Ink | 640px | `.cv-blk p` `.cv-text` |
-| Why | **16px** | 400 | 1.55 | 0 | Ink | — | `.cv-why` |
-| Product body | **16px** | 400 | 1.6 | 0 | Ink | 420px | `.cv-prod-copy p` |
-| Retro title | **15px** | 700 | — | 0 | Ink | — | `.cv-refl h3` |
-| Retro body | **15px** | 400 | — | 0 | Ink | — | `.cv-refl p` |
-| Option body | **14px** | 400 | 1.55 | 0 | Faint | — | `.cv-opt p` |
-| Meta / cite | **13px** | 400 | 1.4–1.55 | 0 ~ 0.02em | Faint | — | `.cv-cite` `.cv-pairs` `.cv-stats span` `.cv-note` |
-| Kicker | **12px** | 600 | — | 0.16em, caps | Faint | — | `.cv-kick` |
-| Label | **11px** | 600 | — | 0.18em, caps | Faint | — | `.cv-blk h2` `.cv-opt-tag` |
-| Chosen tag | **11px** | 600 | — | 0.14em, caps | **Teal** | — | `.cv-opt.is-on .cv-opt-tag` |
+| 역할 | 크기 | 무게 | 행간 | 자간 | 색 | 클래스 |
+|---|---|---|---|---|---|---|
+| Mark | clamp(72px, 16vw, **180px**) | 600 | 0.8 | −0.06em | Ink | `.cv-mark` |
+| Display | clamp(40px, 7vw, **84px**) | 600 | 0.95 | −0.035em | Ink | `.cv-title` |
+| Quote | clamp(32px, 5vw, **52px**) | 500 | 1.2 | −0.03em | Ink | `.cv-quote` |
+| Ask | clamp(28px, 4vw, **40px**) | 600 | 1.2 | −0.03em | Ink | `.cv-ask` |
+| Metric | clamp(26px, 3.2vw, **40px**) | 600 | 1.1 | −0.04em, tabular | **Teal** | `.cv-stats b` |
+| Ordinal | **72px** | 600 | 0.8 | −0.06em | Ink | `.cv-prod-n` |
+| Lede | clamp(18px, 2.1vw, **22px**) | 400 | 1.5 | 0 | Ink | `.cv-sub` |
+| Decision | clamp(18px, 2vw, **22px**) | 600 | 1.35 | −0.02em | **Teal** | `.cv-then` |
+| Product title | **22px** | 600 | — | −0.02em | Ink | `.cv-prod-copy h3` |
+| Option title | **18px** | 600 | — | −0.02em | Ink | `.cv-opt h3` |
+| Body | **17px** | 400 | 1.65 | 0 | Ink | `.cv-blk p` `.cv-text` |
+| Why | **16px** | 400 | 1.55 | 0 | Ink | `.cv-why` |
+| Product body | **16px** | 400 | 1.6 | 0 | Ink | `.cv-prod-copy p` |
+| Retro title | **15px** | 700 | — | 0 | Ink | `.cv-refl h3` |
+| Retro body | **15px** | 400 | — | 0 | Ink | `.cv-refl p` |
+| Option body | **14px** | 400 | 1.55 | 0 | Faint | `.cv-opt p` |
+| Meta / cite | **13px** | 400 | 1.4–1.55 | 0 ~ 0.02em | Faint | `.cv-cite` `.cv-pairs` `.cv-stats span` `.cv-note` |
+| Kicker | **12px** | 600 | — | 0.16em, caps | Faint | `.cv-kick` |
+| Label | **11px** | 600 | — | 0.18em, caps | Faint | `.cv-blk h2` `.cv-opt-tag` |
+| Chosen tag | **11px** | 600 | — | 0.14em, caps | **Teal** | `.cv-opt.is-on .cv-opt-tag` |
 
 섹션 라벨(`.cv-blk h2`)은 본문 제목이 아니다. Ask가 제목이다.
 
@@ -152,4 +152,4 @@ Wanted Sans Variable, Wanted Sans, Pretendard JP, Inter, system-ui
 3. 세 언어는 `js/i18n.js`. 영어 리듬이 기준이다. KO/JA는 위에 적은 tracking만 보정한다.
 4. 강조가 필요하면 문장을 `.cv-then`으로 빼거나 지표 칸에 숫자를 둔다. 본문 일부를 틸로 칠하지 않는다.
 
-02 Loop, 03 Off는 같은 골격이다. 이 스케일을 기본으로 두고, 그 케이스만의 예외는 그 페이지 주석에 한 줄로 적는다.
+02 Loop는 같은 타입·색 역할을 쓴다 (`#cv-loop`). 페이지 폭은 원래 콘텐츠 wrap(890px)을 유지한다. 03 Off는 아직 이 표를 따르지 않는다.

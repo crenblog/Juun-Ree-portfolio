@@ -1,8 +1,6 @@
-/* Shared read-position scrubber. Any page that loads page.js gets this.
-   One handle. Pointer x and thumb x use the same inset math so the
-   thumb center sits on the cursor. No hover ghost. */
+/* Shared read-position scrubber. Handle = scroll. Ghost = hover, same math, lower opacity. */
 (function(){
-  var MARKUP='<div class="sk1-card" id="cvSk1Card" aria-hidden="true"><p class="sk1-title" id="cvSk1Title"></p></div><div class="sk1-bar" id="cvSk1Bar" role="slider" aria-label="Read position" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" tabindex="0"><div class="sk1-ticks" id="cvSk1Ticks"></div><div class="sk1-handle" aria-hidden="true"></div></div>';
+  var MARKUP='<div class="sk1-card" id="cvSk1Card" aria-hidden="true"><p class="sk1-title" id="cvSk1Title"></p></div><div class="sk1-bar" id="cvSk1Bar" role="slider" aria-label="Read position" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" tabindex="0"><div class="sk1-ticks" id="cvSk1Ticks"></div><div class="sk1-ghost" aria-hidden="true"></div><div class="sk1-handle" aria-hidden="true"></div></div>';
 
   function boot(){
     var sk1=ensure();
@@ -14,10 +12,14 @@
     var ticks=document.getElementById('cvSk1Ticks');
     var titleEl=document.getElementById('cvSk1Title');
     var handle=sk1.querySelector('.sk1-handle');
-    if(!card||!bar||!ticks||!titleEl||!handle)return;
-
     var ghost=sk1.querySelector('.sk1-ghost');
-    if(ghost)ghost.remove();
+    if(!ghost){
+      ghost=document.createElement('div');
+      ghost.className='sk1-ghost';
+      ghost.setAttribute('aria-hidden','true');
+      bar.insertBefore(ghost,handle);
+    }
+    if(!card||!bar||!ticks||!titleEl||!handle)return;
 
     if(!ticks.childElementCount){
       for(var i=0;i<40;i++){
@@ -75,9 +77,10 @@
       var max=m.padL+m.travel+m.thumb/2;
       return Math.max(0,Math.min(1,(x-min)/Math.max(1,max-min)));
     }
-    function place(p){
+    function placeThumb(el,p){
+      if(!el)return;
       var m=metrics();
-      handle.style.left=(m.padL+p*m.travel)+'px';
+      el.style.left=(m.padL+p*m.travel)+'px';
     }
     function labelScope(){
       if(isCaseReading()){
@@ -126,12 +129,12 @@
     function paint(){
       var root=scroller();
       if(!root){sk1.hidden=true;return;}
-      var p=drag||hover?pointerX:progress();
-      if(!(drag||hover))pointerX=p;
-      place(p);
-      bar.setAttribute('aria-valuenow',String(Math.round(progress()*100)));
+      var p=progress();
+      placeThumb(handle,p);
+      placeThumb(ghost,pointerX);
+      bar.setAttribute('aria-valuenow',String(Math.round(p*100)));
       var m=maxScroll();
-      var scroll=(drag||hover)?pointerX*m:topOf(root);
+      var scroll=(hover||drag)?pointerX*m:topOf(root);
       fillCard(sectionAt(scroll));
       cardOn();
     }
@@ -147,7 +150,7 @@
     }
     function onMove(e){
       pointerX=pointerP(e);
-      if(drag){setP(pointerX);place(pointerX);fillCard(sectionAt(pointerX*maxScroll()));cardOn();}
+      if(drag){setP(pointerX);paint();}
       else if(hover)paint();
     }
     function onDown(e){
@@ -156,9 +159,7 @@
       if(bar.setPointerCapture&&e.pointerId!=null)bar.setPointerCapture(e.pointerId);
       pointerX=pointerP(e);
       setP(pointerX);
-      place(pointerX);
-      fillCard(sectionAt(pointerX*maxScroll()));
-      cardOn();
+      paint();
       e.preventDefault();
     }
     function onUp(e){
