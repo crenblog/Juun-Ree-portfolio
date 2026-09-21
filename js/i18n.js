@@ -31,7 +31,7 @@ var I18N={
   "abSocK": {"en": "Social", "ko": "소셜", "ja": "ソーシャル"},
   "ctKick": {"en": "Get in Touch", "ko": "연락하기", "ja": "お問い合わせ"},
   "ctH2v": {"en": "<span class=\"ct-line\">Even if the answer isn’t clear yet,</span><span class=\"ct-line\">we can start.</span>", "ko": "<span class=\"ct-line\">아직 답이 선명하지 않아도,</span><span class=\"ct-line\">함께 시작할 수 있습니다.</span>", "ja": "<span class=\"ct-line\">まだ答えがはっきりしていなくても、</span><span class=\"ct-line\">一緒に始められます。</span>"},
-  "footL": {"en": "© 2026 Juun Reë · Seoul · Tokyo", "ko": "© 2026 Juun Reë · 서울 · 도쿄", "ja": "© 2026 Juun Reë · ソウル · 東京"},
+  "footL": {"en": "© 2026 Juun Ree · Seoul · Tokyo", "ko": "© 2026 Juun Ree · 서울 · 도쿄", "ja": "© 2026 Juun Ree · ソウル · 東京"},
   "footR": {"en": "Designed by me, coded with AI.", "ko": "직접 디자인하고, AI와 함께 코딩했습니다.", "ja": "デザインは自分で、コーディングはAIと共に。"},
   "csBack": {"en": "All work", "ko": "전체 작업", "ja": "ワーク一覧"},
   "csRole": {"en": "Role", "ko": "역할", "ja": "役割"},

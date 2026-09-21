@@ -4,7 +4,7 @@
 <head>
   <meta charset="utf-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"/>
-  <title>JUUN REË · DESIGNER</title>
+  <title>JUUN REE · DESIGNER</title>
   <link href="https://fonts.googleapis.com" rel="preconnect"/>
   <link href="https://cdn.jsdelivr.net/gh/wanteddev/wanted-sans@v1.0.1/packages/wanted-sans/fonts/webfonts/variable/split/WantedSansVariable.min.css" rel="stylesheet"/>
   <link as="style" crossorigin="" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard-jp.min.css" rel="preload"/>
@@ -31,8 +31,79 @@
   </a>
   <h1 class="cf-title">All work</h1>
 
-  <main id="main-content" class="all-work-main" aria-label="All work">
-    <!-- Inner design will be added here -->
+  <main id="main-content" class="all-work-main work-index" aria-label="All work">
+    <header class="work-index__intro">
+      <p class="work-index__eyebrow">Featured case studies · 2024–2025</p>
+      <h2>Products for the moments when people need clarity.</h2>
+      <p class="work-index__lede">Three selected projects across culture, learning, and digital wellbeing. Each case shows the constraint, the decision, and the evidence behind the work.</p>
+    </header>
+
+    <!--
+      P0 cover rule: each featured project has a stable visual slot now.
+      Replace these colour covers with real product screenshots in P1; do not add
+      extra projects until they meet the same evidence standard.
+    -->
+    <section class="work-index__section" aria-labelledby="featured-work">
+      <div class="work-index__section-head">
+        <p id="featured-work">Selected work</p>
+        <span>03 projects</span>
+      </div>
+
+      <div class="work-index__grid">
+        <a class="work-card work-card--lead" href="biennale.html">
+          <figure class="work-card__visual">
+            <img src="assets/images/01-biennale.svg" alt="Biennale Guide — SeMA cover" width="1600" height="1000"/>
+            <span class="work-card__number" aria-hidden="true">01</span>
+            <span class="work-card__visual-label">Mobile web · SeMA</span>
+          </figure>
+          <div class="work-card__copy">
+            <div class="work-card__meta"><span>Research + UX/UI</span><span>2025</span></div>
+            <h3>Biennale Guide — SeMA</h3>
+            <p>A browser-first visitor guide for choosing what to see next, without an app install.</p>
+            <p class="work-card__evidence">Prototype test · task completion 3/10 → 9/10</p>
+            <span class="work-card__link">Read case study <span aria-hidden="true">→</span></span>
+          </div>
+        </a>
+
+        <a class="work-card" href="loop.html">
+          <figure class="work-card__visual">
+            <img src="assets/images/02-loop.svg" alt="Loop — Vocabulary cover" width="1600" height="1000"/>
+            <span class="work-card__number" aria-hidden="true">02</span>
+            <span class="work-card__visual-label">PWA · Personal learning</span>
+          </figure>
+          <div class="work-card__copy">
+            <div class="work-card__meta"><span>Design + development</span><span>2024</span></div>
+            <h3>Loop — Vocabulary</h3>
+            <p>A vocabulary tool that holds words through spaced repetition.</p>
+            <p class="work-card__evidence">Personal product · PWA</p>
+            <span class="work-card__link">Read case study <span aria-hidden="true">→</span></span>
+          </div>
+        </a>
+
+        <a class="work-card" href="off.html">
+          <figure class="work-card__visual">
+            <img src="assets/images/03-off.svg" alt="Off — Screen Time cover" width="1600" height="1000"/>
+            <span class="work-card__number" aria-hidden="true">03</span>
+            <span class="work-card__visual-label">Android · Digital wellbeing</span>
+          </figure>
+          <div class="work-card__copy">
+            <div class="work-card__meta"><span>Research + Flutter</span><span>2024</span></div>
+            <h3>Off — Screen Time</h3>
+            <p>A wellbeing tool that makes the pull of notifications visible.</p>
+            <p class="work-card__evidence">Personal product · Android</p>
+            <span class="work-card__link">Read case study <span aria-hidden="true">→</span></span>
+          </div>
+        </a>
+      </div>
+    </section>
+
+    <section class="work-index__principles" aria-labelledby="work-principles">
+      <p id="work-principles">What connects the work</p>
+      <div>
+        <p>I do not remove complexity by default. I make the next step clear when time, attention, or confidence is limited.</p>
+        <a href="index.html#contact">Start a conversation <span aria-hidden="true">→</span></a>
+      </div>
+    </section>
   </main>
 
 <div class="case-view" id="caseView" role="dialog" aria-modal="true" aria-label="Case study details" aria-hidden="true" inert>

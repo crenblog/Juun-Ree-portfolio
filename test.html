@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"/>
+  <title>TEST — 3D Gallery · JUUN REE</title>
+  <link href="https://fonts.googleapis.com" rel="preconnect"/>
+  <link href="https://cdn.jsdelivr.net/gh/wanteddev/wanted-sans@v1.0.1/packages/wanted-sans/fonts/webfonts/variable/split/WantedSansVariable.min.css" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #0a0aff;
+      --fg: #ffffff;
+      --card-w: 260px;
+      --card-h: 340px;
+    }
+
+    html {
+      background: var(--bg);
+      height: 100%;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--fg);
+      font-family: 'Wanted Sans Variable', -apple-system, sans-serif;
+      height: 100%;
+      overflow: hidden; /* We control scroll manually */
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ── TOP NAV ── */
+    .nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 20px 36px;
+      pointer-events: none;
+    }
+    .nav a, .nav button {
+      pointer-events: auto;
+      background: none;
+      border: none;
+      color: var(--fg);
+      font-family: inherit;
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      cursor: pointer;
+      text-decoration: none;
+      opacity: 0.9;
+      transition: opacity 0.2s;
+    }
+    .nav a:hover, .nav button:hover { opacity: 1; }
+    .nav-left { display: flex; align-items: center; gap: 6px; }
+    .nav-arrow {
+      width: 18px; height: 18px;
+      opacity: 0.9;
+    }
+    .nav-right { display: flex; gap: 28px; align-items: center; }
+
+    /* ── PROJECT COUNTER ── */
+    .counter {
+      position: fixed;
+      bottom: 36px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      opacity: 0.7;
+      transition: opacity 0.3s;
+      pointer-events: none;
+    }
+    .counter-line {
+      width: 48px;
+      height: 1px;
+      background: rgba(255,255,255,0.4);
+      position: relative;
+      overflow: hidden;
+    }
+    .counter-line::after {
+      content: '';
+      position: absolute;
+      top: 0; left: 0;
+      height: 100%;
+      background: #fff;
+      width: var(--progress, 0%);
+      transition: width 0.5s ease;
+    }
+
+    /* ── PROJECT INFO (shows on focus) ── */
+    .project-info {
+      position: fixed;
+      bottom: 80px;
+      left: 50%;
+      transform: translateX(-50%) translateY(12px);
+      z-index: 100;
+      text-align: center;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.4s ease, transform 0.4s ease;
+    }
+    .project-info.visible {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+    .project-info-title {
+      font-size: 18px;
+      font-weight: 700;
+      letter-spacing: -0.01em;
+      margin-bottom: 4px;
+    }
+    .project-info-desc {
+      font-size: 13px;
+      opacity: 0.65;
+      max-width: 28ch;
+    }
+
+    /* ── SCROLL HINT ── */
+    .scroll-hint {
+      position: fixed;
+      bottom: 36px;
+      right: 36px;
+      z-index: 100;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      opacity: 0.5;
+      writing-mode: vertical-rl;
+      pointer-events: none;
+      transition: opacity 0.5s;
+    }
+    .scroll-hint.hidden { opacity: 0; }
+
+    /* ── 3D SCENE ── */
+    .scene-wrap {
+      position: fixed;
+      inset: 0;
+      perspective: 900px;
+      perspective-origin: 50% 50%;
+      overflow: hidden;
+    }
+
+    .scene {
+      position: absolute;
+      inset: 0;
+      transform-style: preserve-3d;
+      will-change: transform;
+    }
+
+    /* ── CARDS ── */
+    .card {
+      position: absolute;
+      width: var(--card-w);
+      height: var(--card-h);
+      left: calc(50% - var(--card-w) / 2);
+      top: calc(50% - var(--card-h) / 2);
+      border-radius: 6px;
+      overflow: hidden;
+      cursor: pointer;
+      transform-style: preserve-3d;
+      backface-visibility: hidden;
+      will-change: transform;
+      transition: box-shadow 0.3s ease;
+    }
+    .card:hover {
+      box-shadow: 0 24px 60px rgba(0,0,0,0.5);
+    }
+    .card-inner {
+      position: absolute;
+      inset: 0;
+      border-radius: 6px;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .card-bg {
+      position: absolute;
+      inset: 0;
+      background-size: cover;
+      background-position: center;
+    }
+    /* Card label, only shows on hover */
+    .card-label {
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      padding: 20px 16px 16px;
+      background: linear-gradient(to top, rgba(0,0,0,0.75) 0%, transparent 100%);
+      color: #fff;
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: -0.01em;
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+    .card:hover .card-label { opacity: 1; }
+
+    /* Card number badge */
+    .card-num {
+      position: absolute;
+      top: 12px; left: 12px;
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 0.04em;
+      color: rgba(255,255,255,0.7);
+    }
+
+    /* Focused card ring */
+    .card.is-focused {
+      box-shadow: 0 0 0 2px rgba(255,255,255,0.6), 0 32px 80px rgba(0,0,0,0.6);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Navigation -->
+  <nav class="nav" aria-label="Main navigation">
+    <div class="nav-left">
+      <a href="work.html" class="nav-back" aria-label="Back to All Work">
+        <svg class="nav-arrow" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M11.25 4.5 6.75 9l4.5 4.5"/>
+        </svg>
+      </a>
+      <a href="work.html" style="font-size:13px">All Work</a>
+    </div>
+    <div class="nav-right">
+      <a href="index.html">JUUN REE</a>
+    </div>
+  </nav>
+
+  <!-- Project info overlay -->
+  <div class="project-info" id="projectInfo" aria-live="polite">
+    <div class="project-info-title" id="infoTitle"></div>
+    <div class="project-info-desc" id="infoDesc"></div>
+  </div>
+
+  <!-- Counter -->
+  <div class="counter" id="counter" aria-label="Project index">
+    <span id="counterCurrent">01</span>
+    <div class="counter-line" style="--progress: 10%"></div>
+    <span id="counterTotal">10</span>
+  </div>
+
+  <!-- Scroll hint -->
+  <div class="scroll-hint" id="scrollHint">Scroll</div>
+
+  <!-- 3D Scene -->
+  <div class="scene-wrap" id="sceneWrap">
+    <div class="scene" id="scene"></div>
+  </div>
+
+  <script>
+  (() => {
+    'use strict';
+
+    /* ── PROJECT DATA ── */
+    const projects = [
+      { id:'biennale', title:'Biennale Guide', description:'A biennale visitor guide you open without installing an app.', color:'#0C3024', accent:'#1a5c44', num:'01', url:'biennale.html' },
+      { id:'loop',     title:'Loop',           description:'A vocabulary tool that holds words with spaced repetition.',        color:'#7A5B15', accent:'#a07820', num:'02', url:'loop.html' },
+      { id:'off',      title:'Off',            description:'A wellbeing tool that makes the pull of notifications visible.',    color:'#26333B', accent:'#3a4e5a', num:'03', url:'off.html' },
+      { id:'archive',  title:'04 Archive',     description:'Coming soon.',                                                       color:'#154536', accent:'#1f6050', num:'04', url:'archive.html' },
+      { id:'signal',   title:'05 Signal',      description:'Coming soon.',                                                       color:'#3D4A3A', accent:'#556050', num:'05', url:'signal.html' },
+      { id:'quiet',    title:'06 Quiet',       description:'Coming soon.',                                                       color:'#5E584E', accent:'#78706a', num:'06', url:'quiet.html' },
+      { id:'frame',    title:'07 Frame',       description:'Coming soon.',                                                       color:'#1a1a1a', accent:'#333333', num:'07', url:'frame.html' },
+      { id:'route',    title:'08 Route',       description:'Coming soon.',                                                       color:'#4A4A4A', accent:'#606060', num:'08', url:'route.html' },
+      { id:'hold',     title:'09 Hold',        description:'Coming soon.',                                                       color:'#7A5B15', accent:'#a07820', num:'09', url:'hold.html' },
+      { id:'field',    title:'10 Field',       description:'Coming soon.',                                                       color:'#0C3024', accent:'#1a5c44', num:'10', url:'field.html' },
+    ];
+
+    /* ── LAYOUT: each card's resting 3D position & rotation ── */
+    /* Cards scatter across X/Y/Z in a spatial grid, with random-ish offsets */
+    const seed = (n, a, b) => {
+      /* Deterministic pseudo-random based on index */
+      const s = Math.sin(n * 127.1 + a * 311.7 + b) * 43758.5453;
+      return (s - Math.floor(s));
+    };
+
+    const N = projects.length;
+
+    /* We'll lay cards in a loose 3D spiral/scatter.
+       The "focused" card for index i will be:
+       - Translated to near Z=0, centered X/Y
+       - All others pushed back, off-axis  */
+
+    /* Pre-compute resting world positions for each card */
+    const cardData = projects.map((p, i) => {
+      /* Scatter: evenly spaced in a loose cluster */
+      const angle = (i / N) * Math.PI * 2 * 2.4; /* golden-angle-ish */
+      const radius = 220 + seed(i, 1, 0) * 160;
+      const rx = Math.cos(angle) * radius;
+      const ry = (Math.sin(angle) * radius * 0.7) + (seed(i,2,0) - 0.5) * 60;
+      const rz = (seed(i,3,0) - 0.5) * 500 - i * 60;
+      const rotX = (seed(i,4,0) - 0.5) * 28;
+      const rotY = (seed(i,5,0) - 0.5) * 36;
+      const rotZ = (seed(i,6,0) - 0.5) * 18;
+      return { x: rx, y: ry, z: rz, rotX, rotY, rotZ };
+    });
+
+    /* ── DOM: build cards ── */
+    const scene = document.getElementById('scene');
+    const cardEls = [];
+
+    projects.forEach((p, i) => {
+      const el = document.createElement('div');
+      el.className = 'card';
+      el.dataset.index = i;
+      el.dataset.url = p.url;
+
+      el.innerHTML = `
+        <div class="card-inner">
+          <div class="card-bg" style="background:linear-gradient(135deg, ${p.color} 0%, ${p.accent} 100%)"></div>
+          <span class="card-num">${p.num}</span>
+          <div class="card-label">${p.title}</div>
+        </div>
+      `;
+
+      el.addEventListener('click', () => {
+        if (focused === i) {
+          window.location.href = p.url;
+        } else {
+          scrollToIndex(i);
+        }
+      });
+
+      scene.appendChild(el);
+      cardEls.push(el);
+    });
+
+    /* ── STATE ── */
+    let focused = 0;       /* which card is centered */
+    let targetFocused = 0;
+    let scrollAcc = 0;     /* accumulated wheel delta */
+    const SCROLL_THRESH = 100; /* delta needed to advance one card */
+    let isAnimating = false;
+    let raf = null;
+
+    /* ── ANIMATION ── */
+    /* For each card, lerp its transform toward target */
+    const current = cardData.map(d => ({ ...d }));
+    const target  = cardData.map(d => ({ ...d }));
+
+    function computeTargets(focusIdx) {
+      /* When card focusIdx is focused:
+         - It goes to  x=0, y=0, z=200 (close to viewer), rot=0
+         - Others scatter back to their resting positions, scaled by (distance from focus)  */
+      const focusZ = 200;
+
+      projects.forEach((_, i) => {
+        const dist = i - focusIdx;
+        const absDist = Math.abs(dist);
+
+        if (i === focusIdx) {
+          target[i].x = 0;
+          target[i].y = 0;
+          target[i].z = focusZ;
+          target[i].rotX = 0;
+          target[i].rotY = 0;
+          target[i].rotZ = 0;
+        } else {
+          /* Push others back and to their scattered position.
+             Cards further from focus are pushed deeper. */
+          const pushZ = cardData[i].z - (focusIdx * 60); /* shift whole stack */
+          const falloff = Math.min(absDist / 3, 1);
+
+          target[i].x = cardData[i].x * (0.6 + falloff * 0.6);
+          target[i].y = cardData[i].y * (0.6 + falloff * 0.6);
+          target[i].z = pushZ - absDist * 80;
+          target[i].rotX = cardData[i].rotX * falloff;
+          target[i].rotY = cardData[i].rotY * falloff;
+          target[i].rotZ = cardData[i].rotZ * falloff;
+        }
+      });
+    }
+
+    function applyTransforms() {
+      cardEls.forEach((el, i) => {
+        const d = current[i];
+        el.style.transform = `
+          translate3d(${d.x}px, ${d.y}px, ${d.z}px)
+          rotateX(${d.rotX}deg)
+          rotateY(${d.rotY}deg)
+          rotateZ(${d.rotZ}deg)
+        `;
+      });
+    }
+
+    const LERP_SPEED = 0.075;
+    function lerp(a, b, t) { return a + (b - a) * t; }
+
+    let needsRender = true;
+
+    function tick() {
+      let allSettled = true;
+      current.forEach((c, i) => {
+        const t = target[i];
+        const keys = ['x','y','z','rotX','rotY','rotZ'];
+        keys.forEach(k => {
+          const next = lerp(c[k], t[k], LERP_SPEED);
+          if (Math.abs(next - t[k]) > 0.01) allSettled = false;
+          c[k] = next;
+        });
+      });
+      applyTransforms();
+
+      if (!allSettled || needsRender) {
+        raf = requestAnimationFrame(tick);
+      } else {
+        raf = null;
+        isAnimating = false;
+        needsRender = false;
+      }
+    }
+
+    function startTick() {
+      if (!raf) {
+        needsRender = true;
+        raf = requestAnimationFrame(tick);
+      }
+    }
+
+    /* ── FOCUS ── */
+    const infoEl = document.getElementById('projectInfo');
+    const infoTitle = document.getElementById('infoTitle');
+    const infoDesc = document.getElementById('infoDesc');
+    const counterCurrent = document.getElementById('counterCurrent');
+    const counterLine = document.querySelector('.counter-line');
+    const scrollHint = document.getElementById('scrollHint');
+
+    function setFocused(idx) {
+      idx = Math.max(0, Math.min(N - 1, idx));
+      if (idx === focused && !isAnimating) return;
+
+      focused = idx;
+      isAnimating = true;
+
+      /* Update card classes */
+      cardEls.forEach((el, i) => {
+        el.classList.toggle('is-focused', i === idx);
+        el.style.zIndex = i === idx ? 10 : 1;
+      });
+
+      /* Update info */
+      const p = projects[idx];
+      infoTitle.textContent = p.title;
+      infoDesc.textContent = p.description;
+      infoEl.classList.add('visible');
+
+      /* Update counter */
+      counterCurrent.textContent = String(idx + 1).padStart(2, '0');
+      const pct = Math.round(((idx + 1) / N) * 100);
+      counterLine.style.setProperty('--progress', pct + '%');
+
+      /* Hide scroll hint after first scroll */
+      if (idx > 0) scrollHint.classList.add('hidden');
+
+      computeTargets(idx);
+      startTick();
+    }
+
+    function scrollToIndex(idx) {
+      scrollAcc = 0;
+      setFocused(idx);
+    }
+
+    /* ── INITIAL LAYOUT ── */
+    /* Set initial positions instantly (no lerp on first frame) */
+    computeTargets(0);
+    current.forEach((c, i) => {
+      Object.assign(c, target[i]);
+    });
+    applyTransforms();
+    setFocused(0);
+
+    /* ── INPUT: WHEEL ── */
+    let wheelCooldown = false;
+
+    window.addEventListener('wheel', e => {
+      e.preventDefault();
+
+      if (wheelCooldown) return;
+
+      scrollAcc += e.deltaY;
+
+      if (scrollAcc > SCROLL_THRESH) {
+        scrollAcc = 0;
+        scrollToIndex(focused + 1);
+        wheelCooldown = true;
+        setTimeout(() => wheelCooldown = false, 600);
+      } else if (scrollAcc < -SCROLL_THRESH) {
+        scrollAcc = 0;
+        scrollToIndex(focused - 1);
+        wheelCooldown = true;
+        setTimeout(() => wheelCooldown = false, 600);
+      }
+    }, { passive: false });
+
+    /* ── INPUT: KEYBOARD ── */
+    window.addEventListener('keydown', e => {
+      if (e.key === 'ArrowDown' || e.key === 'ArrowRight') {
+        e.preventDefault();
+        scrollToIndex(focused + 1);
+      } else if (e.key === 'ArrowUp' || e.key === 'ArrowLeft') {
+        e.preventDefault();
+        scrollToIndex(focused - 1);
+      } else if (e.key === 'Enter') {
+        window.location.href = projects[focused].url;
+      }
+    });
+
+    /* ── INPUT: TOUCH ── */
+    let touchStartY = null;
+    let touchCooldown = false;
+
+    window.addEventListener('touchstart', e => {
+      touchStartY = e.touches[0].clientY;
+    }, { passive: true });
+
+    window.addEventListener('touchend', e => {
+      if (touchStartY === null || touchCooldown) return;
+      const dy = touchStartY - e.changedTouches[0].clientY;
+      if (Math.abs(dy) > 40) {
+        touchCooldown = true;
+        scrollToIndex(focused + (dy > 0 ? 1 : -1));
+        setTimeout(() => touchCooldown = false, 700);
+      }
+      touchStartY = null;
+    }, { passive: true });
+
+    /* ── MOUSE PARALLAX: subtle tilt on mouse move ── */
+    let mouseX = 0, mouseY = 0;
+    const sceneWrap = document.getElementById('sceneWrap');
+
+    window.addEventListener('mousemove', e => {
+      mouseX = (e.clientX / window.innerWidth - 0.5) * 2;
+      mouseY = (e.clientY / window.innerHeight - 0.5) * 2;
+
+      /* Shift perspective origin for parallax */
+      sceneWrap.style.perspectiveOrigin =
+        `${50 + mouseX * 4}% ${50 + mouseY * 4}%`;
+    });
+
+  })();
+  </script>
+</body>
+</html>
