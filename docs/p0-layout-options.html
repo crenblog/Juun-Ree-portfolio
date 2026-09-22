@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Juun Ree — P0 형식 비교</title>
+<style>
+:root{--bg:#F1EDE8;--ink:#1a1a1a;--green:#0C3024;--line:#c9bdb0}*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font-family:system-ui,sans-serif;line-height:1.6}main{max-width:1180px;margin:auto;padding:48px 28px}h1{font-size:36px;letter-spacing:-.04em;margin:8px 0}h2{font-size:26px;letter-spacing:-.03em}p{max-width:75ch}a{color:var(--green);text-underline-offset:4px}nav{display:flex;flex-wrap:wrap;gap:24px;margin:24px 0 48px}.option{margin:64px 0 96px}.note{font-size:14px;color:#5e584e}.canvas{border:1px solid var(--line);padding:28px;margin-top:24px}.bar{display:flex;justify-content:space-between;border-bottom:1px solid var(--line);padding-bottom:18px;margin-bottom:28px;font-size:13px;font-weight:700;color:var(--green)}.gallery{display:grid;grid-template-columns:1fr 1fr;gap:32px 24px}figure{margin:0}.media{background:#0C3024;color:#f1ede8;aspect-ratio:16/10;display:flex;align-items:center;justify-content:center;flex-direction:column;padding:20px;text-align:center}.media strong{font-size:clamp(22px,3vw,38px);letter-spacing:-.04em}.media small{opacity:.65;font-size:11px;margin-top:8px}.loop{background:#7a5b15}.off{background:#26333b}figcaption{display:flex;justify-content:space-between;gap:12px;font-size:13px;padding-top:12px}.single{max-width:800px;margin:auto;display:grid;gap:32px}.row{display:grid;grid-template-columns:180px 1fr auto;gap:28px;align-items:center;border-bottom:1px solid var(--line);padding:24px 0}.row h3{font-size:25px;margin:0;letter-spacing:-.04em}.row .media strong{font-size:18px}.row .media small{font-size:9px}.trade{display:grid;grid-template-columns:1fr 1fr;gap:20px}.trade p{font-size:14px;margin-bottom:0}footer{border-top:1px solid var(--line);padding:30px 0}section{scroll-margin-top:24px}@media(max-width:640px){main{padding:28px 18px}.canvas{padding:16px}.gallery{grid-template-columns:1fr}.row{grid-template-columns:85px 1fr auto;gap:12px}.row h3{font-size:17px}.row .media{aspect-ratio:1}.row .media strong{font-size:12px}.row .media small{display:none}.trade{grid-template-columns:1fr;gap:0}h1{font-size:29px}}
+</style></head><body><main>
+<div class="note">JUUN REE · P0 · 선택용 비교안</div><h1>All work, 어떤 방식으로 볼까요?</h1>
+<p>아래 프레임 안이 실제 페이지 구성 제안입니다. 세 안 모두 소개글 없이 작업부터 시작합니다. 지금 색 면은 실제 UI를 넣을 자리이며, 최종 커버 디자인이 아닙니다.</p>
+<nav><a href="#a">A · 2열 갤러리</a><a href="#b">B · 큰 이미지 연속</a><a href="#c">C · 이미지 인덱스</a><a href="p0-research-and-decisions.md">리서치 문서</a></nav>
+<section class="option" id="a"><h2>A — 2열 갤러리 · 추천</h2><p>Jesse Mann의 작업 페이지에서 참고한 큰 이미지 두 열. 여러 제품을 빠르게 비교하고 상세를 선택하는 방식입니다.</p><a href="https://www.jessemann.design/portfolio">실제 레퍼런스 보기 ↗</a>
+<div class="canvas"><div class="bar"><span>← &nbsp; All work</span><span>EN · KR · JP</span></div><div class="gallery">
+<figure><div class="media"><strong>SeMA</strong><small>대표 제품 이미지 자리</small></div><figcaption><span>Biennale Guide — SeMA</span><span>2025 ↗</span></figcaption></figure>
+<figure><div class="media loop"><strong>Loop</strong><small>대표 제품 이미지 자리</small></div><figcaption><span>Loop — Vocabulary</span><span>2024 ↗</span></figcaption></figure>
+<figure><div class="media off"><strong>Off</strong><small>대표 제품 이미지 자리</small></div><figcaption><span>Off — Screen Time</span><span>2024 ↗</span></figcaption></figure>
+</div></div><div class="trade"><p>장점: 균등한 위계. 작업을 추가하기 쉬움. 모바일은 한 열로 전환.</p><p>주의: 카드에서 작은 UI 글씨까지 읽히지는 않음. 실제 커버의 구도가 중요.</p></div></section>
+<section class="option" id="b"><h2>B — 큰 이미지 연속</h2><p>Cameron Sagey의 큰 제품 이미지 나열을 참고한 방식. 한 제품씩 충분한 크기로 보여줍니다.</p><a href="https://cameronsagey.com/">실제 레퍼런스 보기 ↗</a>
+<div class="canvas"><div class="bar"><span>← &nbsp; All work</span><span>EN · KR · JP</span></div><div class="single">
+<figure><div class="media"><strong>SeMA</strong><small>대표 제품 이미지 자리</small></div><figcaption><span>Biennale Guide — SeMA</span><span>2025 ↗</span></figcaption></figure>
+<figure><div class="media loop"><strong>Loop</strong><small>대표 제품 이미지 자리</small></div><figcaption><span>Loop — Vocabulary</span><span>2024 ↗</span></figcaption></figure>
+<figure><div class="media off"><strong>Off</strong><small>대표 제품 이미지 자리</small></div><figcaption><span>Off — Screen Time</span><span>2024 ↗</span></figcaption></figure>
+</div></div><div class="trade"><p>장점: 실제 UI와 제품 분위기가 가장 크게 보임. 모바일 구조가 자연스러움.</p><p>주의: 전체 작업을 보려면 길게 스크롤. 고품질 이미지가 준비되어야 효과적.</p></div></section>
+<section class="option" id="c"><h2>C — 이미지가 보이는 인덱스</h2><p>현재 Juun 메인의 행 구조를 바탕으로, 호버하지 않아도 작은 제품 이미지를 볼 수 있게 한 안입니다.</p>
+<div class="canvas"><div class="bar"><span>← &nbsp; All work</span><span>EN · KR · JP</span></div>
+<div class="row"><div class="media"><strong>SeMA</strong><small>제품 이미지 자리</small></div><h3>Biennale Guide — SeMA</h3><span>2025 ↗</span></div>
+<div class="row"><div class="media loop"><strong>Loop</strong><small>제품 이미지 자리</small></div><h3>Loop — Vocabulary</h3><span>2024 ↗</span></div>
+<div class="row"><div class="media off"><strong>Off</strong><small>제품 이미지 자리</small></div><h3>Off — Screen Time</h3><span>2024 ↗</span></div>
+</div><div class="trade"><p>장점: 기존 사이트 인상이 가장 많이 남음. 작업을 빠르게 훑을 수 있음.</p><p>주의: 이미지 크기가 작음. 메인에 큰 대표 이미지를 두는 조합이 유리.</p></div></section>
+<footer><p>추천 조합: <strong>메인 — 대표 이미지 + 기존 인덱스 보강 / All work — A / 상세 — 결정과 화면을 연결하는 에디토리얼</strong></p><p class="note">위 캡션의 작품명·연도는 현재 로컬 사이트 기준입니다. 이 비교 페이지는 별도 문서이며 공개 사이트에 연결하지 않았습니다.</p></footer>
+</main></body></html>

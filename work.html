@@ -2,6 +2,7 @@
 <!-- ⛔ ENCODING LOCK — UTF-8 only. Do NOT re-encode CJK. -->
 <html lang="en" class="page-work">
 <head>
+  <script src="js/space-entry.js?v=space-sheet-10"></script>
   <meta charset="utf-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"/>
   <title>JUUN REE · DESIGNER</title>
@@ -10,9 +11,9 @@
   <link as="style" crossorigin="" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard-jp.min.css" rel="preload"/>
   <link as="style" crossorigin="" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard-jp.min.css" rel="stylesheet"/>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
-  <link rel="stylesheet" href="css/site.css"/>
+  <link rel="stylesheet" href="css/site.css?v=space-sheet-10"/>
 </head>
-<body class="page-work">
+<body class="page-work rings-only">
   <div class="sb-lang" id="siteLang" role="group" aria-label="Language Selector">
     <div class="indicator" aria-hidden="true"></div>
     <button class="on" data-lang="en">EN</button>
@@ -31,8 +32,15 @@
   </a>
   <h1 class="cf-title">All work</h1>
 
-  <main id="main-content" class="all-work-main" aria-label="All work">
-    <!-- Inner design will be added here -->
+  <main class="rings" id="main-content" aria-label="All work">
+    <section class="rings__viewport" id="ringsViewport" aria-describedby="ringsInstructions" tabindex="0">
+      <p class="sr-only" id="ringsInstructions">Scroll or swipe to explore work along a spiral. Hover or focus a card to read its title. On touch screens, use the previous and next buttons or swipe; the centered work has a View project link. Arrow keys select the previous or next work; Enter opens it. Escape dismisses the hover label.</p>
+      <canvas class="rings__room" id="ringsRoom" aria-hidden="true"></canvas>
+      <div class="rings__field" id="ringsField"></div>
+      <div class="rings__shade" aria-hidden="true"></div>
+      <div class="rings__intro" id="ringsIntro" aria-hidden="true"><span>Scroll to explore</span></div>
+      <p class="rings__count" id="ringsCount"></p>
+    </section>
   </main>
 
 <div class="case-view" id="caseView" role="dialog" aria-modal="true" aria-label="Case study details" aria-hidden="true" inert>
@@ -216,10 +224,12 @@
 </div>
 
   <div id="announcement" class="sr-only" aria-live="polite" aria-atomic="true"></div>
-  <script id="gallery-data" type="application/json">{"version":"1.0.0","defaultLayout":"gallery","autoplay":false,"blankMedia":false,"background":"","motion":[],"projects":[{"id":"biennale","title":"Biennale Guide","description":"A biennale visitor guide you open without installing an app.","alt":"Biennale Guide — SeMA","src":"assets/images/01-biennale.svg","url":"biennale.html","color":"#0C3024","brightness":0.92,"hover":1.12},{"id":"loop","title":"Loop","description":"A vocabulary tool that holds words with spaced repetition.","alt":"Loop — Vocabulary","src":"assets/images/02-loop.svg","url":"loop.html","color":"#7A5B15","brightness":0.9,"hover":1.1},{"id":"off","title":"Off","description":"A wellbeing tool that makes the pull of notifications visible.","alt":"Off — Screen Time","src":"assets/images/03-off.svg","url":"off.html","color":"#26333B","brightness":0.88,"hover":1.08},{"id":"archive","title":"04 Archive","description":"Template slot. Copy templates/case.html and replace this copy.","alt":"04 Archive","src":"","url":"archive.html","color":"#154536","brightness":0.86,"hover":1.1},{"id":"signal","title":"05 Signal","description":"Template slot. Copy templates/case.html and replace this copy.","alt":"05 Signal","src":"","url":"signal.html","color":"#3D4A3A","brightness":0.84,"hover":1.08},{"id":"quiet","title":"06 Quiet","description":"Template slot. Copy templates/case.html and replace this copy.","alt":"06 Quiet","src":"","url":"quiet.html","color":"#5E584E","brightness":0.9,"hover":1.12},{"id":"frame","title":"07 Frame","description":"Template slot. Copy templates/case.html and replace this copy.","alt":"07 Frame","src":"","url":"frame.html","color":"#1a1a1a","brightness":0.82,"hover":1.08},{"id":"route","title":"08 Route","description":"Template slot. Copy templates/case.html and replace this copy.","alt":"08 Route","src":"","url":"route.html","color":"#4A4A4A","brightness":0.88,"hover":1.1},{"id":"hold","title":"09 Hold","description":"Template slot. Copy templates/case.html and replace this copy.","alt":"09 Hold","src":"","url":"hold.html","color":"#7A5B15","brightness":0.9,"hover":1.1},{"id":"field","title":"10 Field","description":"Template slot. Copy templates/case.html and replace this copy.","alt":"10 Field","src":"","url":"field.html","color":"#0C3024","brightness":0.85,"hover":1.08}]}</script>
-  <script src="js/page.js"></script>
+  <script id="rings-data" type="application/json">{"projects":[{"id":"biennale-guide","case":"biennale","title":"Biennale Guide","type":"Product Design","alt":"Gallery context photograph by Mike Von; not the actual SeMA installation","src":"assets/images/work/gallery-context.jpg","url":"biennale.html"},{"id":"loop-words","case":"loop","title":"Loop Vocabulary","type":"Product · Build","alt":"Loop vocabulary overview","src":"assets/images/work/words-cover.svg","url":"loop.html"},{"id":"off-pull","case":"off","title":"Off Screen Time","type":"Digital Wellbeing","alt":"Abstract glass study by Rick Rothenberg","src":"assets/images/work/glass-study.jpg","url":"off.html"},{"id":"biennale-time","case":"biennale","title":"40 · 90 · 180","type":"Experience Strategy","alt":"Time-based route selection","src":"assets/images/work/time-cover.svg","url":"biennale.html"},{"id":"loop-recall","case":"loop","title":"Recall Rhythm","type":"Interaction Design","alt":"Abstract orange study by Tasha Kostyuk","src":"assets/images/work/orange-study.jpg","url":"loop.html"},{"id":"off-signal","case":"off","title":"Notification Pull","type":"Product System","alt":"Notification pattern fragment","src":"assets/images/work/signal-cover.svg","url":"off.html"},{"id":"biennale-route","case":"biennale","title":"The Next Artwork","type":"Navigation System","alt":"Biennale route fragment","src":"assets/images/work/route-cover.svg","url":"biennale.html"},{"id":"loop-build","case":"loop","title":"Designed · Built","type":"Design Engineering","alt":"Loop design and build fragment","src":"assets/images/work/build-cover.svg","url":"loop.html"},{"id":"off-quiet","case":"off","title":"A Quieter Choice","type":"Behavior Design","alt":"Quiet choice fragment","src":"assets/images/work/quiet-cover.svg","url":"off.html"}]}</script>
+  <script src="js/page.js?v=space-sheet-10"></script>
   <script src="js/i18n.js"></script>
-  <script src="js/cases.js"></script>
-  <!-- <script src="js/gallery.js"></script> -->
+  <script src="js/space-transitions.js?v=space-sheet-10"></script>
+  <script src="js/cases.js?v=space-sheet-10"></script>
+  <script src="js/rings-renderer.js?v=space-sheet-10"></script>
+  <script src="js/work-rings.js?v=space-sheet-10"></script>
 </body>
 </html>

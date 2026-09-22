@@ -25,13 +25,14 @@
     html { scroll-behavior: smooth; scrollbar-gutter: stable; background: var(--bg); }
     @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
 
-    /* Sequential fade: content out, then in. Paper stays. No view-transition (that flashes). */
+    /* The sheet owns navigation; never stack a root fade over it. */
     @view-transition { navigation: none; }
-    body { opacity: 0; }
-    html:not(.i18n-pending):not(.is-leaving) body { animation: jr-page-in .34s cubic-bezier(.22,1,.36,1) forwards; }
-    html.is-leaving body { animation: jr-page-out .2s cubic-bezier(.4,0,1,1) forwards; }
-    @keyframes jr-page-in { from { opacity: 0; } to { opacity: 1; } }
-    @keyframes jr-page-out { to { opacity: 0; } }
+    body { opacity: 1; }
+    .space-sheet,html.space-entering::after{position:fixed;inset:0;z-index:2147483646;background:var(--teal,#0c3024);pointer-events:none;visibility:visible;transform:translateY(100%);will-change:transform}
+    html.space-entering::after{content:'';transform:translateY(0)}
+    html.space-busy .space-sheet,html.space-entering::after{pointer-events:auto;touch-action:none}
+    html.space-busy{cursor:progress}
+    html.space-busy .case-view,html.space-busy .cv-wrap{transition:none!important}
     @media (prefers-reduced-motion: reduce) { body { opacity: 1; animation: none !important; } }
 
     /* First paint must never expose a half-translated page. Subsequent language
@@ -1602,6 +1603,7 @@ html:lang(en) .case-lang, html:lang(ko) .case-lang, html:lang(ja) .case-lang {
     body.page-work{overflow:hidden;height:100svh}
     body.page-work > a.cv-back{visibility:visible;pointer-events:auto;z-index:1200}
     .cf-title{position:fixed;z-index:1200;top:20px;left:78px;height:46px;margin:0;display:flex;align-items:center;font-size:16px;font-weight:700;letter-spacing:-.02em;color:var(--teal)}
+    body.page-work > a.cv-back,body.page-work > .cf-title,html.page-work #siteLang{z-index:5000!important}
     @media (max-width:1079px){.cf-title{left:86px;height:54px}}
     @media (max-width:599px){.cf-title{top:16px;left:90px}}
     #viewport{position:fixed;inset:0;display:grid;place-items:center;overflow:hidden;background:var(--bg)}
@@ -1635,3 +1637,93 @@ html:lang(en) .case-lang, html:lang(ko) .case-lang, html:lang(ja) .case-lang {
     #empty[hidden]{display:none}
     .tile img[hidden],#detail-image[hidden]{display:none!important}
     @media (prefers-reduced-motion:reduce){body.page-work *,body.page-work *::before,body.page-work *::after{scroll-behavior:auto!important}}
+
+    /* All work — RINGS.
+       Unique projects share one ascending helix and cross the camera centre in order. */
+    html.page-work,
+    body.page-work.rings-only{
+      --work-forest:#0c3024;--work-paper:#f1ede8;--work-sage:#b3c1a8;
+      width:100%;height:100%;overflow:hidden;background:var(--work-paper);color:var(--work-forest);color-scheme:light;
+    }
+    body.page-work.rings-only > .cv-back{
+      color:#0c3024;background:rgba(241,237,232,.8);border-color:rgba(12,48,36,.15);box-shadow:none;
+    }
+    body.page-work.rings-only > .cf-title{color:#0c3024;font-weight:600}
+    html.page-work body.rings-only #siteLang{
+      color:#0c3024;background:rgba(241,237,232,.8);border-color:rgba(12,48,36,.15);box-shadow:none;
+    }
+    html.page-work body.rings-only #siteLang button{color:rgba(12,48,36,.65)}
+    html.page-work body.rings-only #siteLang button.on{color:#f1ede8}
+    html.page-work body.rings-only #siteLang .indicator{background:#0c3024!important}
+    .rings{position:fixed;inset:0;overflow:clip;background:var(--work-paper)}
+    .rings__viewport{
+      position:absolute;inset:0;overflow:clip;isolation:isolate;outline:none;cursor:grab;
+      touch-action:none;user-select:none;-webkit-user-select:none;
+    }
+    .rings__viewport.is-dragging{cursor:grabbing}
+    .rings__viewport:focus-visible{outline:none}
+    .rings__room{position:absolute;inset:0;width:100%;height:100%;z-index:0;pointer-events:none;background:var(--work-paper)}
+    .rings__field{position:absolute;inset:0;z-index:2;transform-style:preserve-3d;perspective-origin:50% 50%;pointer-events:none}
+    .rings__surfaces{position:absolute;inset:0;width:100%;height:100%;z-index:1;pointer-events:none}
+    .has-surfaces .rings__card{background:transparent}
+    .has-surfaces .rings__card img{opacity:0}
+    .has-surfaces .rings__boundary-circle{opacity:0}
+    .has-surfaces .rings__card::after{border-color:transparent}
+    .has-surfaces .rings__card:focus-visible::after{border-color:#f1ede8}
+    .rings__card{
+      position:absolute;left:50%;top:50%;
+      padding:0;border:0;border-radius:0;background:#143f32;color:#f1ede8;cursor:pointer;pointer-events:auto;
+      transform-origin:50% 50%;backface-visibility:visible;will-change:transform;outline:none;box-shadow:none;
+    }
+    .rings__card::after{content:"";position:absolute;inset:0;border:1px solid rgba(241,237,232,.08);pointer-events:none}
+    .rings__card img{width:100%;height:100%;object-fit:cover;pointer-events:none;user-select:none}
+    .rings__card:focus-visible::after{border:2px solid #f1ede8;box-shadow:0 0 0 4px rgba(241,237,232,.2)}
+    .rings__shade{display:none}
+    .rings__hover-label{position:absolute;z-index:8;display:flex;align-items:center;gap:10px;padding:10px 14px;max-width:min(280px,calc(100vw - 32px));border-radius:14px;background:#0c3024;border:1px solid rgba(206,218,193,.2);color:#f1ede8;line-height:1.35;opacity:0;visibility:hidden;pointer-events:none;transition:opacity .2s ease,visibility .2s;box-shadow:0 5px 20px rgba(4,13,8,.1)}
+    .rings__hover-label.is-visible{opacity:1;visibility:visible;pointer-events:auto}
+    .rings__hover-label>span:last-child{min-width:0;overflow-wrap:anywhere}
+    .rings__viewport:not(.is-touch) .rings__hover-label{pointer-events:none;border-radius:100px;padding:10px 16px;max-width:250px;background:rgba(12,48,36,.82);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);box-shadow:none}
+    .rings__viewport:not(.is-touch) .rings__hover-label strong{font-size:16px;font-weight:500}
+    .rings__viewport:not(.is-touch) .rings__hover-label small{font-size:14px;opacity:.7}
+    @keyframes rings-label-in{from{opacity:0}to{opacity:1}}
+    .rings__hover-label:focus-visible{outline:2px solid #0c3024;outline-offset:4px}
+    .rings__touch-nav{position:absolute;z-index:9;top:var(--touch-action-top);left:50%;width:calc(var(--touch-action-width) + 112px);transform:translateX(-50%);display:flex;justify-content:space-between;pointer-events:none}
+    .rings__touch-nav[hidden]{display:none}
+    .rings__touch-nav button{width:44px;height:64px;border:1px solid rgba(12,48,36,.16);border-radius:12px;background:#f1ede8;color:#0c3024;font-size:20px;pointer-events:auto;cursor:pointer}
+    .rings__viewport.is-touch .rings__hover-label{transform:translateX(-50%);width:var(--touch-action-width);min-height:64px;box-sizing:border-box;box-shadow:none}
+    .rings__boundary{display:grid;place-items:center;background:transparent!important;box-shadow:none;filter:none!important;transform-style:preserve-3d}
+    .rings__boundary::after{display:none}
+    .rings__boundary-circle{position:relative;width:calc(var(--boundary-unit)*.68);height:calc(var(--boundary-unit)*.68);transform-style:preserve-3d;font-family:inherit}
+    .rings__boundary-face{position:absolute;inset:0;display:grid;place-items:center;border-radius:50%;background:var(--work-forest);color:var(--work-paper);font-size:calc(var(--boundary-unit)*.082);line-height:1;letter-spacing:.08em;font-weight:500;backface-visibility:hidden;-webkit-backface-visibility:hidden}
+    .rings__boundary-face--back{transform:rotateY(180deg)}
+    .rings__boundary:focus-visible .rings__boundary-face{outline:2px solid #0c3024;outline-offset:4px}
+    .rings__hover-label[hidden]{display:none}
+    .rings__hover-label strong,.rings__hover-label small{display:block;font-weight:400;font-size:13px}
+    .rings__hover-label small{font-size:11px;margin-top:2px}
+    .rings__hover-label small{opacity:.65}
+    .rings__intro{position:absolute;left:40px;bottom:78px;z-index:5;pointer-events:none;transition:opacity .3s ease}
+    .rings__intro span{display:flex;align-items:center;justify-content:center;min-width:112px;height:48px;padding:0 26px;border:1px solid rgba(241,237,232,.25);border-radius:999px;background:rgba(12,48,36,.52);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);font-size:13px;font-weight:600;letter-spacing:.02em}
+    .rings__intro.is-hidden{opacity:0}
+    .rings__mode{position:absolute;left:40px;bottom:28px;z-index:5;display:flex;align-items:center;height:48px;padding:0 22px;border:1px solid rgba(241,237,232,.24);border-radius:999px;background:rgba(12,48,36,.42);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);pointer-events:none}
+    .rings__mode span{font-size:13px;font-weight:600;letter-spacing:.01em}
+    .rings__count{position:absolute;right:40px;bottom:35px;z-index:5;margin:0;font-size:13px;line-height:1;color:rgba(12,48,36,.75);font-variant-numeric:tabular-nums;pointer-events:none}
+    .rings__intro span{display:block;min-width:0;height:auto;padding:0;border:0;border-radius:0;font-size:12px;font-weight:400;color:var(--work-forest);background:none;backdrop-filter:none;-webkit-backdrop-filter:none}
+    .rings__pause{position:absolute;left:40px;bottom:20px;z-index:8;min-height:44px;padding:0 14px;border:1px solid rgba(12,48,36,.18);border-radius:99px;color:#0c3024;background:rgba(241,237,232,.92);font:inherit;font-size:12px;cursor:pointer}
+    .rings__pause{display:inline-flex;align-items:center;gap:7px;transition:background .16s ease,border-color .16s ease}
+    .rings__motion-icon{display:flex;width:14px;height:14px;flex:none}
+    .rings__motion-icon svg{width:100%;height:100%}
+    @media(hover:hover){.rings__pause:hover{background:#e7e6dd;border-color:rgba(12,48,36,.35)}}
+    .rings__pause:focus-visible,.rings__touch-nav button:focus-visible{outline:2px solid #0c3024;outline-offset:3px}
+    .inside-work-note{display:block;font-size:12px;line-height:1.4;opacity:.6;margin-top:7px;font-weight:400}
+    .has-surfaces .rings__card:focus-visible::after{border-color:var(--work-forest)}
+    .rings__count span{text-decoration:underline;text-underline-offset:3px}
+    @media (max-width:760px){
+      .rings__mode{left:20px;bottom:20px;height:44px;padding:0 18px}
+      .rings__count{right:20px;bottom:36px;font-size:12px}
+      .rings__pause{left:16px;font-size:11px}
+      .rings__intro{left:20px;bottom:76px}
+      }
+    @media (prefers-reduced-motion:reduce){
+      .rings__intro,.rings__hover-label{transition:none}
+      ::view-transition-old(root),::view-transition-new(root){animation:none}
+    }
