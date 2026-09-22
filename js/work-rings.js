@@ -35,13 +35,10 @@
   // Absolute sequence numbers never wrap while visible. Repeated cycles are
   // created ahead of the frustum and retired only beyond its farthest extent.
   function dimensions(){
-    const portrait=height>width;
-    if(width<768 && !portrait)return {fov:50,camera:12,radius:6.4,w:1.54,h:2.09};
-    if(width<500)return {fov:70,camera:7.5,radius:3.9,w:1.1,h:1.54};
-    if(width<768)return {fov:70,camera:9.5,radius:4.6,w:1.1,h:1.54,spacing:3.8};
-    if(width<1024 && portrait)return {fov:65,camera:9,radius:4.7,w:1.32,h:1.84};
-    if(width<1024)return {fov:60,camera:11,radius:5.6,w:1.32,h:1.76};
-    return {fov:50,camera:12,radius:6.4,w:1.54,h:2.09};
+    // Three explicit profiles; rotation/orientation never selects a new camera.
+    if(width<600)return {profile:'phone',fov:70,camera:7.5,radius:3.6,front:380,aspect:1.1/1.54};
+    if(width<1080)return {profile:'tablet',fov:65,camera:9.5,radius:4.45,front:480,aspect:1.32/1.84};
+    return {profile:'desktop',fov:50,camera:12,radius:5.95,front:2.09*1.16*height/(2*Math.tan(50*Math.PI/360)*5.6),aspect:1.54/2.09};
   }
   const label=document.createElement('a'); label.className='rings__hover-label rings__focus-label';label.setAttribute('aria-hidden','true');label.tabIndex=-1;
   const arrow=document.createElement('span');arrow.textContent='↗';
@@ -58,7 +55,9 @@
   function paintPause(){
     // Lucide pause/play, ISC licensed; see assets/icons/lucide/LICENSE.
     pauseIcon.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" focusable="false">'+(paused?'<path d="M5 5a2 2 0 0 1 3.008-1.728l11.997 6.998a2 2 0 0 1 .003 3.458l-12 7A2 2 0 0 1 5 19z"/>':'<rect x="14" y="3" width="5" height="18" rx="1"/><rect x="5" y="3" width="5" height="18" rx="1"/>')+'</svg>';
-    pauseCopy.textContent=paused?'Resume motion':'Pause motion';pause.setAttribute('aria-pressed',String(paused));
+    pauseCopy.textContent=paused?'Auto scroll · Off':'Auto scroll · On';
+    pause.setAttribute('aria-label',paused?'Auto scroll off. Start automatic scrolling':'Auto scroll on. Pause automatic scrolling');
+    pause.setAttribute('aria-pressed',String(!paused));
   }
   paintPause();
   pause.addEventListener('click',()=>{paused=!paused;target=progress;paintPause();intro.classList.add('is-hidden');});
@@ -141,9 +140,8 @@
   }
   function drawRoom(){
     ctx.clearRect(0,0,width,height);
-    const fill=ctx.createRadialGradient(width/2,height/2,0,width/2,height/2,Math.max(width,height)*.75);
-    fill.addColorStop(0,'#f1ede8');fill.addColorStop(.55,'#f1ede8');fill.addColorStop(1,'#e6e3db');ctx.fillStyle=fill;ctx.fillRect(0,0,width,height);
-    const radius=22,extent=height>width?Math.max(30,22*Math.min(height/width,2.2)):22,bands=height>width?22:16;
+    ctx.fillStyle='#f1ede8';ctx.fillRect(0,0,width,height);
+    const radius=20.5,extent=height>width?Math.max(30,22*Math.min(height/width,2.2)):22,bands=height>width?22:16;
     ctx.strokeStyle='rgba(12,48,36,.09)';ctx.lineWidth=.7;
     // Cylinder grid projected through the panel camera, without planar walls.
     function line(points){
@@ -271,19 +269,18 @@
   });
   function resize(){
     width=viewport.clientWidth;height=viewport.clientHeight;config=dimensions();focal=height/(2*Math.tan(config.fov*Math.PI/360));unit=focal/config.camera;
-    // Reserve header, caption and footer even in short landscape windows.
-    const maxFrontHeight=Math.max(64,height-(touchMode?288:240)),frontHeight=config.h*1.16*focal/(config.camera-config.radius);
-    if(frontHeight>maxFrontHeight){const ratio=maxFrontHeight/frontHeight;config.w*=ratio;config.h*=ratio;}
-    // Only the foreground grows. Preserve the existing camera, rear cards and
-    // desktop peak scale; constrain touch peaks to leave room for the fixed CTA.
-    const baseH=config.h*focal/(config.camera-config.radius),baseW=baseH*config.w/config.h;
-    const compact=touchMode||width<1080;
-    frontScale=compact?Math.max(1.16,Math.min(1.16*1.26,maxFrontHeight/baseH,(width-64)/baseW)):1.16;
+    // Fixed mobile/tablet peaks. Width only constrains safety margins, not the
+    // nominal card size. Desktop retains its existing viewport-height ratio.
+    const maxFrontHeight=Math.max(64,height-(touchMode?288:240));
+    frontScale=config.profile==='desktop'?1.16:1.46;
+    const desiredH=Math.min(config.front,maxFrontHeight,(width-64)/config.aspect);
+    config.h=desiredH*(config.camera-config.radius)/(frontScale*focal);config.w=config.h*config.aspect;
     rise=Math.max(config.h*.44,.396);
     const farDepth=config.camera+config.radius+config.w;
     reach=Math.ceil(((height/2+120)*farDepth/focal+config.h*1.5)/(rise*.82))+2;
     const frontH=config.h*frontScale*focal/(config.camera-config.radius),frontW=frontH*config.w/config.h;
     viewport.dataset.frontHeight=frontH.toFixed(1);viewport.dataset.frontScale=frontScale.toFixed(3);
+    viewport.dataset.profile=config.profile;viewport.dataset.radius=String(config.radius);
     viewport.style.setProperty('--touch-action-top',`${Math.min(height-126,height/2+frontH/2+18)}px`);
     viewport.style.setProperty('--touch-action-width',`${Math.min(width-132,Math.max(180,frontW))}px`);
     field.style.perspective=`${focal}px`;
@@ -291,6 +288,22 @@
     const dpr=Math.min(devicePixelRatio||1,2);room.width=Math.round(width*dpr);room.height=Math.round(height*dpr);ctx.setTransform(dpr,0,0,dpr,0,0);surfaces?.resize(width,height);render(1/60);
   }
   addEventListener('resize',resize,{passive:true});
+  // Paint loaded GPU textures under the cover without advancing the helix.
+  addEventListener('portfolio:space-ready',()=>render(1/60));
+  let snapshot=null;
+  window.jrFreezeSpace=async()=>{
+    if(snapshot)return snapshot.decode?.().catch(()=>{});
+    if(!surfaces?.gl)return;
+    render(1/60);
+    // WebKit may omit a live canvas from the outgoing document snapshot.
+    // Freeze only its pixels; accessible controls remain real DOM elements.
+    const bitmap=document.createElement('canvas');bitmap.width=room.width;bitmap.height=room.height;
+    const paint=bitmap.getContext('2d');paint.drawImage(room,0,0);paint.drawImage(surfaces.canvas,0,0,bitmap.width,bitmap.height);
+    snapshot=document.createElement('img');snapshot.className='rings__space-snapshot';snapshot.alt='';snapshot.setAttribute('aria-hidden','true');snapshot.src=bitmap.toDataURL();viewport.append(snapshot);
+    await snapshot.decode?.().catch(()=>{});
+  };
+  window.jrUnfreezeSpace=()=>{snapshot?.remove();snapshot=null;};
+  addEventListener('pageshow',()=>window.jrUnfreezeSpace());
   document.addEventListener('visibilitychange',()=>{cancelAnimationFrame(frame);if(!document.hidden){last=performance.now();frame=requestAnimationFrame(animate);}});
   resize();frame=requestAnimationFrame(animate);
 })();

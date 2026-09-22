@@ -82,10 +82,12 @@ test('reduced motion and restored focus do not introduce automatic travel or sna
   f.viewport.fire('wheel',{deltaY:137,deltaMode:0});f.tick();assert.equal(f.progress(),.343);
   f.window.jrSpace={restoringFocus:true};f.current().focus();f.tick();assert.equal(f.progress(),.343);
 });
-test('desktop peak size is unchanged; the helix pitch increases by ten percent',()=>{
+test('desktop peak size stays unchanged while the cylinder radius contracts',()=>{
   const f=fixture();
   assert.equal(+f.viewport.dataset.frontScale,1.16);
-  assert(Math.abs(+f.viewport.dataset.cycleHeight-2.09*.44*10)<.001);
+  const oldPeak=2.09*1.16*720/(2*Math.tan(50*Math.PI/360)*5.6);
+  assert(Math.abs(+f.viewport.dataset.frontHeight-oldPeak)<.1);
+  assert.equal(+f.viewport.dataset.radius,5.95);
 });
 test('touch foreground grows without changing rear geometry or covering the CTA',()=>{
   for(const [width,height] of [[320,568],[390,844],[768,1024],[1024,768],[1366,1024],[844,390]]){
@@ -95,12 +97,20 @@ test('touch foreground grows without changing rear geometry or covering the CTA'
     assert(scale>=1.16 && scale<=1.462);
     assert(front<=height-288+.1);
     assert(top>=height/2+front/2+17.9);
-    if(height>700)assert(scale>1.16,`${width}×${height}: foreground enlarged`);
+    if(height>700&&width<1080)assert(scale>1.16,`${width}×${height}: foreground enlarged`);
   }
 });
 test('motion control keeps its decorative icon and readable name through toggles',()=>{
   const f=fixture();const [icon,copy]=f.pause.children;
-  assert.equal(icon.attrs['aria-hidden'],'true');assert.match(icon.innerHTML,/<rect/);assert.equal(copy.textContent,'Pause motion');
-  f.pause.fire('click');assert.match(icon.innerHTML,/<path/);assert.equal(copy.textContent,'Resume motion');
-  f.pause.fire('click');assert.match(icon.innerHTML,/<rect/);assert.equal(copy.textContent,'Pause motion');
+  assert.equal(icon.attrs['aria-hidden'],'true');assert.match(icon.innerHTML,/<rect/);assert.equal(copy.textContent,'Auto scroll · On');
+  f.pause.fire('click');assert.match(icon.innerHTML,/<path/);assert.equal(copy.textContent,'Auto scroll · Off');
+  f.pause.fire('click');assert.match(icon.innerHTML,/<rect/);assert.equal(copy.textContent,'Auto scroll · On');
+});
+test('responsive sizing has three profiles and no within-profile width drift',()=>{
+  for(const widths of [[390,430,599],[600,768,1024,1079],[1080,1280,1440]]){
+    const samples=widths.map(width=>fixture({width,height:900}));
+    const peaks=samples.map(f=>f.viewport.dataset.frontHeight);
+    assert.equal(new Set(peaks).size,1);
+    assert.equal(new Set(samples.map(f=>f.viewport.dataset.profile)).size,1);
+  }
 });

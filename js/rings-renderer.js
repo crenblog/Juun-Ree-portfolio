@@ -5,7 +5,7 @@ window.JuunRingsRenderer = class {
     this.canvas = document.createElement('canvas');
     this.canvas.className = 'rings__surfaces';
     this.canvas.setAttribute('aria-hidden', 'true');
-    const gl = this.canvas.getContext('webgl', { alpha: true, antialias: true });
+    const gl = this.canvas.getContext('webgl', { alpha: true, antialias: true, preserveDrawingBuffer: true });
     if (!gl) return;
     this.gl = gl;
     const vertex = `

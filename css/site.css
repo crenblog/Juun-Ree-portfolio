@@ -25,14 +25,33 @@
     html { scroll-behavior: smooth; scrollbar-gutter: stable; background: var(--bg); }
     @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
 
-    /* The sheet owns navigation; never stack a root fade over it. */
-    @view-transition { navigation: none; }
+    /* Peer spaces slide together; details retain the overlay vocabulary. */
+    @view-transition { navigation: auto; }
     body { opacity: 1; }
-    .space-sheet,html.space-entering::after{position:fixed;inset:0;z-index:2147483646;background:var(--teal,#0c3024);pointer-events:none;visibility:visible;transform:translateY(100%);will-change:transform}
+    .space-sheet,html.space-entering::after{position:fixed;inset:0;z-index:2147483646;background:var(--bg,#f1ede8);pointer-events:none;visibility:visible;transform:translateY(100%);will-change:transform}
     html.space-entering::after{content:'';transform:translateY(0)}
     html.space-busy .space-sheet,html.space-entering::after{pointer-events:auto;touch-action:none}
     html.space-busy{cursor:progress}
     html.space-busy .case-view,html.space-busy .cv-wrap{transition:none!important}
+    .cv-test-link{display:inline-block;margin:18px 0 8px;padding:10px 0;color:var(--teal);font-size:14px;text-underline-offset:5px}
+    ::view-transition-group(root){animation-duration:540ms;animation-timing-function:cubic-bezier(.22,.72,.18,1)}
+    ::view-transition-old(root),::view-transition-new(root){mix-blend-mode:normal;animation-fill-mode:both;animation-duration:540ms;animation-timing-function:cubic-bezier(.22,.72,.18,1)}
+    html[data-space-direction="forward"]::view-transition-old(root){animation-name:space-left-out}
+    html[data-space-direction="forward"]::view-transition-new(root){animation-name:space-right-in}
+    html[data-space-direction="back"]::view-transition-old(root){animation-name:space-right-out}
+    html[data-space-direction="back"]::view-transition-new(root){animation-name:space-left-in}
+    @keyframes space-left-out{to{transform:translateX(-100%);opacity:1}}
+    @keyframes space-right-in{from{transform:translateX(100%);opacity:1}to{transform:translateX(0);opacity:1}}
+    @keyframes space-right-out{to{transform:translateX(100%);opacity:1}}
+    @keyframes space-left-in{from{transform:translateX(-100%);opacity:1}to{transform:translateX(0);opacity:1}}
+    .rings{view-transition-name:work-scene}
+    ::view-transition-group(work-scene){animation:none}
+    ::view-transition-old(work-scene),::view-transition-new(work-scene){mix-blend-mode:normal;animation-duration:540ms;animation-timing-function:cubic-bezier(.22,.72,.18,1);animation-fill-mode:both}
+    html[data-space-direction="forward"]::view-transition-old(work-scene){animation-name:space-left-out}
+    html[data-space-direction="forward"]::view-transition-new(work-scene){animation-name:space-right-in}
+    html[data-space-direction="back"]::view-transition-old(work-scene){animation-name:space-right-out}
+    html[data-space-direction="back"]::view-transition-new(work-scene){animation-name:space-left-in}
+    @media(prefers-reduced-motion:reduce){::view-transition-group(*),::view-transition-old(*),::view-transition-new(*){animation:none!important}}
     @media (prefers-reduced-motion: reduce) { body { opacity: 1; animation: none !important; } }
 
     /* First paint must never expose a half-translated page. Subsequent language
@@ -1665,6 +1684,7 @@ html:lang(en) .case-lang, html:lang(ko) .case-lang, html:lang(ja) .case-lang {
     .rings__room{position:absolute;inset:0;width:100%;height:100%;z-index:0;pointer-events:none;background:var(--work-paper)}
     .rings__field{position:absolute;inset:0;z-index:2;transform-style:preserve-3d;perspective-origin:50% 50%;pointer-events:none}
     .rings__surfaces{position:absolute;inset:0;width:100%;height:100%;z-index:1;pointer-events:none}
+    .rings__space-snapshot{position:absolute;inset:0;width:100%;height:100%;z-index:3;pointer-events:none}
     .has-surfaces .rings__card{background:transparent}
     .has-surfaces .rings__card img{opacity:0}
     .has-surfaces .rings__boundary-circle{opacity:0}

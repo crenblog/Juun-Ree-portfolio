@@ -252,7 +252,7 @@ function closeCase(fromPop,covered){
   document.body.classList.remove('case-open','case-chrome-away');
   syncLanguageIndicators(true);
   var page=document.querySelector('.layout')||document.querySelector('.rings');if(page)page.inert=false;
-  if(caseScrollLock.active)releaseMainScrollAfterClose();else document.body.style.overflow='';
+  if(caseScrollLock.active){if(covered)unlockMainScroll();else releaseMainScrollAfterClose();}else document.body.style.overflow='';
   if(!isCasePage&&!fromPop)history.pushState(null,'',listUrl());
   if(window.jrFreezePointer)window.jrFreezePointer();
   if(window.cvSk1Close)window.cvSk1Close();

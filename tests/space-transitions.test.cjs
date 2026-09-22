@@ -56,6 +56,6 @@ test('all public portfolio pages include an early entry cover and shared transit
     const html=fs.readFileSync(path.join(__dirname,'../'+file+'.html'),'utf8');
     assert(html.indexOf('js/space-entry.js')<html.indexOf('</head>'),file);
     assert(html.indexOf('js/space-transitions.js')<html.indexOf('js/cases.js'),file);
-    assert.match(html,/js\/page\.js\?v=space-sheet-10/);
+    assert.match(html,/js\/page\.js\?v=spaces-14/);
   }
 });

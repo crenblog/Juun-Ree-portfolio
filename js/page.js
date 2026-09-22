@@ -15,6 +15,7 @@
 })();
 (function(){
   var here=document.currentScript;
+  if(document.body.classList.contains('sema-preview'))return;
   if(!here||!here.src)return;
   var s=document.createElement('script');
   s.src=here.src.replace(/page\.js(\?.*)?$/,'scrubber.js');
